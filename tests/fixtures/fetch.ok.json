@@ -1,0 +1,20 @@
+{
+  "ok": true,
+  "url": "https://raw.githubusercontent.com/earendil-works/pi-mono/main/packages/coding-agent/docs/extensions.md",
+  "provider": "tavily",
+  "content": "# Extensions\nExtensions are TypeScript modules that add executable behavior to Pi. Use one when a workflow needs tools, commands, event handlers, model providers, session state, or terminal UI rather than instructions alone.\nAn extension runs inside the Pi process with the same operating-system permissions. It can inspect prompts, tool calls, files, credentials, and session history, so load extensions only from sources you trust.\nTypical extensions add an agent tool, protect paths, confirm dangerous commands, react to session events, modify context, expose a command, or display persistent status.\n\n\n## Create and load an extension\nAn extension exports a default factory that receives `ExtensionAPI`. The factory registers capabilities for the current extension runtime.\nCreate `~/.pi/agent/extensions/hello.ts`:\n```typescript\nimport type { ExtensionAPI } from \"@earendil-works/pi-coding-agent\";\nexport default function (pi: ExtensionAPI) {\npi.registerCommand(\"hello\", {\ndescription: \"Show a greeting\",\nhandler: async (name, ctx) => {\nctx.ui.notify(`Hello, ${name || \"world\"}!`, \"info\");\n},\n});\n}\n```\nStart Pi and run `/hello`. During development, load a file directly:\n```bash\npi --extension ./hello.ts\n```\nPi uses `jiti`, so local TypeScript extensions do not need a separate compilation step. Use [Pi packages](packages.md) for distributed extensions and dependencies.\n\n\n## Add it to Pi\nPlace the extension in your user or project extensions directory. Pi loads direct TypeScript or JavaScript files and subdirectories containing an `index.ts` or `index.js` entry point.\nUse a single file for a small extension and a directory for a multi-file implementation. Put npm dependencies in a nearby `package.json`. See [Configuration](configuration.md) for conventional locations and [Settings](settings.md#resources) for additional paths.\nReload replaces the extension runtime, so code after `await ctx.reload()` must not reuse state from the old runtime. Only personal and explicit command-line …[fixture 截断，原长 11941]",
+  "provider_attempts": [
+    {
+      "capability": "web_fetch",
+      "provider": "tavily",
+      "status": "ok",
+      "error_type": "",
+      "error": "",
+      "elapsed_ms": 1427.36,
+      "result_count": 1
+    }
+  ],
+  "provider_notices": [],
+  "fallback_used": false,
+  "elapsed_ms": 1427.5
+}

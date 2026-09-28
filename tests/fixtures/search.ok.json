@@ -1,0 +1,206 @@
+{
+  "ok": true,
+  "error_type": "",
+  "error": "",
+  "session_id": "9a340bf315f9",
+  "query": "Node.js 24 node:sqlite 模块是否仍是实验性、导入时是否打印 ExperimentalWarning",
+  "platform": "",
+  "provider": "xai-responses",
+  "model": "grok-4.20-multi-agent-xhigh",
+  "primary_api_mode": "xai-responses",
+  "content": "**在 Node.js 24（v24.15.0 及以上）中，`node:sqlite` 模块的稳定性为 1.2 - Release Candidate（发布候选版本），导入时不再打印 `ExperimentalWarning`。**[[1]](https://nodejs.cn/api/v24/sqlite/sqlite.html)\n\n### 详细状态\n\n- **稳定性**：`Stability: 1.2 - Release candidate.`（仍属于实验性 API 类别 Stability 1.x，但已进入最终阶段，接近 Stable）。官方文档明确在 v24.15.0 标记为 “SQLite is now a release candidate”。[[1]](https://nodejs.cn/api/v24/sqlite/sqlite.html)\n\n- **ExperimentalWarning**：**不再发出**。在标记 RC 的 PR (#61262，2026 年 2 月合并）中，从 `lib/sqlite.js` 移除了以下代码：[[2]](https://togithub.com/nodejs/node/pull/61262/files)\n\n```js\n  const { emitExperimentalWarning } = require('internal/util');\n  emitExperimentalWarning('SQLite');\n  ```\n\n因此 `import { DatabaseSync } from 'node:sqlite';` 或 `require('node:sqlite')` 时不会再看到 ExperimentalWarning。[[3]](https://flaviocopes.com/node-builtins/)\n\n### 历史背景\n\n- **v22.5.0**：首次引入，需要 `--experimental-sqlite` 标志，Stability 1.1。\n- **v22.13.0 / v23.4.0**：移除对 `--experimental-sqlite` 标志的强制要求，但仍为 experimental（1.1），仍会打印警告。\n- **v24.15.0**（2026 年 4 月 LTS 版本 “Krypton”）：升级为 1.2 Release Candidate，同时移除 warning。[[4]](https://github.com/nodejs/node/releases/tag/v24.15.0)\n\n当前 Node.js 24（截至 2026 年 9 月已到 24.21.x 左右）已全面采用此状态。模块只在 `node:` 协议下可用（`node:sqlite`），直接 `sqlite` 会失败。[[3]](https://flaviocopes.com/node-builtins/)\n\n### 建议\n\n虽然已是 Release Candidate（“接近最小可用性”），但在生产长期项目中仍建议关注后续是否升级到 Stability 2（Stable）。核心 API（如 `DatabaseSync`、`prepare`、`exec`、`all` 等）已相当成熟，可放心用于大多数场景。\n\n**官方文档**（v24）：\n- https://nodejs.cn/api/v24/sqlite/sqlite.html\n- https://nodejs.org/api/sqlite.html（英文版状态一致）\n\n来源包括官方文档、GitHub PR #61262、Node.js v24.15.0 发布说明及 2026 年 9 月的实测文章。",
+  "sources": [
+    {
+      "url": "https://nodejs.cn/api/v24/sqlite/sqlite.html",
+      "title": "1"
+    },
+    {
+      "url": "https://togithub.com/nodejs/node/pull/61262/files",
+      "title": "2"
+    },
+    {
+      "url": "https://flaviocopes.com/node-builtins/",
+      "title": "3"
+    },
+    {
+      "url": "https://github.com/nodejs/node/releases/tag/v24.15.0",
+      "title": "4"
+    }
+  ],
+  "sources_count": 4,
+  "primary_sources": [
+    {
+      "url": "https://nodejs.cn/api/v24/sqlite/sqlite.html",
+      "title": "1"
+    },
+    {
+      "url": "https://togithub.com/nodejs/node/pull/61262/files",
+      "title": "2"
+    },
+    {
+      "url": "https://flaviocopes.com/node-builtins/",
+      "title": "3"
+    },
+    {
+      "url": "https://github.com/nodejs/node/releases/tag/v24.15.0",
+      "title": "4"
+    }
+  ],
+  "primary_sources_count": 4,
+  "extra_sources": [],
+  "extra_sources_count": 0,
+  "source_warning": "",
+  "routing_decision": {
+    "docs_intent": false,
+    "zh_current_intent": false,
+    "web_current_intent": false,
+    "fetch_intent": false,
+    "supplemental_paths": [],
+    "intent_router_mode": "hybrid",
+    "required_capabilities": [],
+    "intent_signals": {
+      "docs_api_intent": false,
+      "current_or_locale_intent": false,
+      "known_url": false,
+      "vertical_intent": false,
+      "strict_validation": false,
+      "rule_scores": {},
+      "urls": []
+    },
+    "confidence": 0.35,
+    "router_engines_used": [
+      "rules"
+    ],
+    "degraded": true,
+    "degraded_reason": "embeddings not configured; classifier not configured",
+    "reasons": [
+      "rules found no supplemental capability need"
+    ],
+    "validation_level": "balanced",
+    "fallback_mode": "auto",
+    "providers": "auto",
+    "main_search_chain": [
+      "xai-responses"
+    ],
+    "openai_compatible_stream": false,
+    "openai_compatible_api_mode": "",
+    "openai_compatible_models": [],
+    "openai_compatible_model_fallback_enabled": false,
+    "openai_compatible_timeout_policy": "remaining_budget",
+    "search_timeout_seconds": 300.0,
+    "main_search_reserve_seconds": 200.0
+  },
+  "providers_used": [
+    "xAI Responses"
+  ],
+  "provider_attempts": [
+    {
+      "capability": "main_search",
+      "provider": "xAI Responses",
+      "status": "ok",
+      "error_type": "",
+      "error": "",
+      "elapsed_ms": 28762.0,
+      "result_count": 1,
+      "model": "grok-4.20-multi-agent-xhigh",
+      "attempt_timeout_seconds": 299.955
+    }
+  ],
+  "provider_notices": [],
+  "fallback_used": false,
+  "transport_fallback_used": false,
+  "model_fallback_used": false,
+  "validation_level": "balanced",
+  "minimum_profile_ok": true,
+  "capability_status": {
+    "main_search": {
+      "configured": [
+        "xai-responses"
+      ],
+      "fallback_chain": [
+        "xai-responses",
+        "openai-compatible"
+      ],
+      "ok": true
+    },
+    "web_search": {
+      "configured": [
+        "tavily",
+        "firecrawl"
+      ],
+      "fallback_chain": [
+        "zhipu",
+        "zhipu-mcp",
+        "tavily",
+        "firecrawl",
+        "tinyfish"
+      ],
+      "ok": true
+    },
+    "docs_search": {
+      "configured": [
+        "exa"
+      ],
+      "fallback_chain": [
+        "context7",
+        "exa"
+      ],
+      "ok": true
+    },
+    "web_fetch": {
+      "configured": [
+        "tavily",
+        "firecrawl"
+      ],
+      "fallback_chain": [
+        "tavily",
+        "jina",
+        "zhipu-mcp-reader",
+        "firecrawl",
+        "tinyfish"
+      ],
+      "ok": true
+    },
+    "vertical_search": {
+      "configured": [],
+      "fallback_chain": [
+        "anysearch"
+      ],
+      "experimental": true,
+      "explicit_only": [
+        "sciverse"
+      ],
+      "route_enabled": {
+        "anysearch": true,
+        "sciverse": false
+      },
+      "ok": false
+    }
+  },
+  "elapsed_ms": 28816.9,
+  "timeout_seconds": 300.0,
+  "timeout_phase": "",
+  "timed_out_phases": [],
+  "phase_attempts": [
+    {
+      "phase": "router",
+      "status": "ok",
+      "budget_ms": 0.0,
+      "elapsed_ms": 0.26,
+      "remaining_ms": 299999.67,
+      "remote_components_configured": false
+    },
+    {
+      "phase": "main_search",
+      "status": "ok",
+      "budget_ms": 299955.39,
+      "elapsed_ms": 28762.03,
+      "remaining_ms": 271193.36,
+      "main_search_reserve_ms": 200000.0
+    }
+  ],
+  "deadline_elapsed_ms": 28816.88,
+  "deadline_remaining_ms": 271183.12,
+  "partial_success": false,
+  "timeout_warning": ""
+}

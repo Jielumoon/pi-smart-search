@@ -1,0 +1,8 @@
+usage: smart-search research [-h] [--lang {auto,zh,en}]
+                             [--budget {quick,standard,deep}]
+                             [--evidence-dir EVIDENCE_DIR]
+                             [--fallback {auto,off}]
+                             [--format {json,markdown,content}]
+                             [--output OUTPUT]
+                             query
+smart-search research: error: argument --budget: invalid choice: 'nope' (choose from 'quick', 'standard', 'deep')

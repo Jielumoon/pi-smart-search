@@ -1,0 +1,547 @@
+{
+  "ok": true,
+  "error_type": "",
+  "error": "",
+  "mode": "deep_research_execution",
+  "query_mode": "research",
+  "question": "pi coding agent 扩展 registerTool onUpdate 进度回调怎么用",
+  "budget": "quick",
+  "research_plan": {
+    "ok": true,
+    "mode": "deep_research",
+    "query_mode": "deep",
+    "question": "pi coding agent 扩展 registerTool onUpdate 进度回调怎么用",
+    "trigger_source": "explicit_cli",
+    "difficulty": "standard",
+    "intent_signals": {
+      "recency_requirement": "none",
+      "docs_api_intent": false,
+      "locale_domain_scope": "global",
+      "known_url": false,
+      "source_authority_need": "normal",
+      "claim_risk": "medium",
+      "cross_validation_need": "normal",
+      "breadth_depth_budget": "quick"
+    },
+    "decomposition": [
+      {
+        "id": "sq1",
+        "question": "pi coding agent 扩展 registerTool onUpdate 进度回调怎么用 的整体问题轮廓和候选来源是什么？",
+        "reason": "先做 broad discovery，避免一开始把问题拆错。",
+        "required_capabilities": [
+          "broad_discovery"
+        ]
+      }
+    ],
+    "capability_plan": [
+      {
+        "capability": "broad_discovery",
+        "tools": [
+          "search"
+        ],
+        "reason": "Find the initial answer shape and candidate sources."
+      },
+      {
+        "capability": "page_evidence",
+        "tools": [
+          "fetch"
+        ],
+        "reason": "Fetch key URLs before claim-level conclusions."
+      }
+    ],
+    "evidence_policy": "fetch_before_claim",
+    "preflight": {
+      "tool": "doctor",
+      "command": "smart-search doctor --format json",
+      "when": "configuration or provider availability is uncertain",
+      "executed_by_deep_command": false
+    },
+    "steps": [
+      {
+        "id": "s1",
+        "subquestion_id": "sq1",
+        "tool": "search",
+        "purpose": "broad discovery and routing metadata",
+        "command": "smart-search search \"pi coding agent 扩展 registerTool onUpdate 进度回调怎么用\" --validation balanced --extra-sources 1 --format json --output \"/tmp/smart-search-evidence/20260927-2117-pi-coding-agent-扩展-registertool-onupdate-进度回调怎么用/01-search.json\"",
+        "output_path": "/tmp/smart-search-evidence/20260927-2117-pi-coding-agent-扩展-registertool-onupdate-进度回调怎么用/01-search.json"
+      },
+      {
+        "id": "s2",
+        "subquestion_id": "sq1",
+        "tool": "fetch",
+        "purpose": "fetch key URLs before final claims",
+        "command": "smart-search fetch \"<key-url>\" --format markdown --output \"/tmp/smart-search-evidence/20260927-2117-pi-coding-agent-扩展-registertool-onupdate-进度回调怎么用/02-fetch.md\"",
+        "output_path": "/tmp/smart-search-evidence/20260927-2117-pi-coding-agent-扩展-registertool-onupdate-进度回调怎么用/02-fetch.md"
+      }
+    ],
+    "gap_check": {
+      "required": true,
+      "rule": "fetch missing evidence for key claims or downgrade unsupported claims to unverified candidates",
+      "unsupported_claim_action": "downgrade_to_unverified_candidate"
+    },
+    "final_answer_policy": "cite fetched evidence, list unverified candidates, and include key commands",
+    "usage_boundary": {
+      "search": "smart-search search runs live fast/broad search immediately.",
+      "deep": "smart-search deep is an offline planner; it does not execute provider calls or fetch pages.",
+      "execution": "An AI agent or user executes the listed steps with existing CLI commands, then performs gap_check."
+    },
+    "allowed_tools": [
+      "context7-docs",
+      "context7-library",
+      "exa-search",
+      "exa-similar",
+      "fetch",
+      "map",
+      "search",
+      "zhipu-mcp-read-file",
+      "zhipu-mcp-reader",
+      "zhipu-mcp-repo-structure",
+      "zhipu-mcp-search",
+      "zhipu-mcp-search-doc",
+      "zhipu-search"
+    ],
+    "evidence_dir": "/tmp/smart-search-evidence/20260927-2117-pi-coding-agent-扩展-registertool-onupdate-进度回调怎么用",
+    "elapsed_ms": 2.04
+  },
+  "routing_decision": {
+    "signals": {
+      "docs_api_intent": false,
+      "official_low_noise_intent": false,
+      "current_or_locale_intent": false,
+      "known_url": false,
+      "pdf_or_arxiv_intent": false,
+      "js_heavy_intent": false,
+      "vertical_intent": false,
+      "claim_risk": "medium",
+      "cross_validation_need": "normal",
+      "raw_query": "pi coding agent 扩展 registertool onupdate 进度回调怎么用"
+    },
+    "fallback_mode": "auto",
+    "route_policy_version": "research-router-v1",
+    "invalid_provider_overrides": [],
+    "capabilities": {
+      "web_search": {
+        "providers": [
+          "tavily",
+          "firecrawl"
+        ],
+        "reason": "broad source discovery"
+      },
+      "docs_search": {
+        "providers": [
+          "exa"
+        ],
+        "reason": "official low-noise discovery"
+      },
+      "web_fetch": {
+        "providers": [
+          "tavily",
+          "firecrawl"
+        ],
+        "reason": "evidence extraction"
+      },
+      "vertical_search": {
+        "providers": [],
+        "reason": "vertical intent absent",
+        "experimental": true
+      }
+    },
+    "intent_router_mode": "hybrid",
+    "required_capabilities": [],
+    "intent_signals": {
+      "docs_api_intent": false,
+      "current_or_locale_intent": false,
+      "known_url": false,
+      "vertical_intent": false,
+      "strict_validation": false,
+      "rule_scores": {},
+      "urls": [],
+      "recency_requirement": "none",
+      "locale_domain_scope": "global",
+      "source_authority_need": "normal",
+      "claim_risk": "medium",
+      "cross_validation_need": "normal",
+      "breadth_depth_budget": "quick"
+    },
+    "confidence": 0.35,
+    "router_engines_used": [
+      "rules"
+    ],
+    "degraded": true,
+    "degraded_reason": "embeddings not configured; classifier not configured",
+    "reasons": [
+      "rules found no supplemental capability need"
+    ]
+  },
+  "stage_results": [
+    {
+      "stage": "web_discovery",
+      "ok": true,
+      "result_count": 5,
+      "provider_attempts": [
+        {
+          "capability": "web_search",
+          "provider": "tavily",
+          "status": "ok",
+          "error_type": "",
+          "error": "",
+          "elapsed_ms": 3979.83,
+          "result_count": 5
+        }
+      ]
+    },
+    {
+      "stage": "candidate_fetch",
+      "url": "https://github.com/earendil-works/pi/blob/main/packages/coding-agent/CHANGELOG.md",
+      "ok": true,
+      "provider_attempts": [
+        {
+          "capability": "web_fetch",
+          "provider": "tavily",
+          "status": "ok",
+          "error_type": "",
+          "error": "",
+          "elapsed_ms": 3869.77,
+          "result_count": 1
+        }
+      ]
+    },
+    {
+      "stage": "candidate_fetch",
+      "url": "https://pi.dev/docs/latest/extensions",
+      "ok": true,
+      "provider_attempts": [
+        {
+          "capability": "web_fetch",
+          "provider": "tavily",
+          "status": "ok",
+          "error_type": "",
+          "error": "",
+          "elapsed_ms": 1757.75,
+          "result_count": 1
+        }
+      ]
+    },
+    {
+      "stage": "candidate_fetch",
+      "url": "https://www.runoob.com/pi-agent/pi-agent-custom-tools.html",
+      "ok": true,
+      "provider_attempts": [
+        {
+          "capability": "web_fetch",
+          "provider": "tavily",
+          "status": "ok",
+          "error_type": "",
+          "error": "",
+          "elapsed_ms": 1449.04,
+          "result_count": 1
+        }
+      ]
+    },
+    {
+      "stage": "candidate_fetch",
+      "url": "https://www.npmjs.com/package/%40vandeepunk%2Fpi-coding-agent",
+      "ok": true,
+      "provider_attempts": [
+        {
+          "capability": "web_fetch",
+          "provider": "tavily",
+          "status": "ok",
+          "error_type": "",
+          "error": "",
+          "elapsed_ms": 1231.1,
+          "result_count": 1
+        }
+      ]
+    },
+    {
+      "stage": "candidate_fetch",
+      "url": "https://zhuanlan.zhihu.com/p/2083955378535121230",
+      "ok": true,
+      "provider_attempts": [
+        {
+          "capability": "web_fetch",
+          "provider": "tavily",
+          "status": "empty",
+          "error_type": "",
+          "error": "",
+          "elapsed_ms": 1823.35,
+          "result_count": 0
+        },
+        {
+          "capability": "web_fetch",
+          "provider": "firecrawl",
+          "status": "ok",
+          "error_type": "",
+          "error": "",
+          "elapsed_ms": 7022.49,
+          "result_count": 1
+        }
+      ]
+    }
+  ],
+  "discovery_sources": [
+    {
+      "url": "https://github.com/earendil-works/pi/blob/main/packages/coding-agent/CHANGELOG.md",
+      "provider": "tavily",
+      "title": "pi/packages/coding-agent/CHANGELOG.md at main",
+      "description": "Tools registered via pi.registerTool() The onUpdate callback is now correctly forwarded through the hook wrapper, fixing custom tool progress updates."
+    },
+    {
+      "url": "https://pi.dev/docs/latest/extensions",
+      "provider": "tavily",
+      "title": "Extensions · Documentation",
+      "description": "```\nimport { createReadTool, createBashTool, type ReadOperations } from \"@earendil-works/pi-coding-agent\"; // Create tool with custom operations const remoteRead = createReadTool(cwd, { operations: { readFile: (path) => sshExec(remote, `cat ${path}`), access: (path) => sshExec(remote, `test -r ${path}`).then(() => {}), } }); // Register, checking flag at execution time pi.registerTool({ ...remoteRead, async execute(id, params, signal, onUpdate, _ctx) { const ssh = getSshConfig(); if (ssh) { const tool = createReadTool(cwd, { operations: createRemoteOps(ssh) }); return tool.execute(id, params, signal, onUpdate); } return localRead.execute(id, params, signal, onUpdate); }, }); \n``` [...] import { Type } from \"typebox\"; import { StringEnum } from \"@earendil-works/pi-ai\"; pi.registerTool({ name: \"my_tool\", label: \"My Tool\", description: \"What this tool does\", promptSnippet: \"Summarize or transform text according to action\", promptGuidelines: [\"Use my_tool when the user asks to summarize previously generated text.\"], parameters: Type.Object({ action: StringEnum([\"list\", \"add\"] as const), text: Type.Optional(Type.String()), }), prepareArguments(args) { // Optional compatibility shim. Runs before schema validation. // Return the current schema shape, for example to fold legacy fields // into the modern parameter object. return args; }, async execute(toolCallId, params, signal, onUpdate, ctx) { // Stream progress onUpdate?.({ content: [{ type: \"text\", text: \"Working...\" }] }); [...] ## ExtensionAPI Methods\n\n Copied\n\n### pi.on(event, handler)\n\n Copied\n\nSubscribe to events. See Events for event types and return values.\n\n### pi.registerTool(definition)\n\n Copied\n\nRegister a custom tool callable by the LLM. See Custom Tools for full details.\n\n`pi.registerTool()` works both during extension load and after startup. You can call it inside `session_start`, command handlers, or other event handlers. New tools are refreshed immediately in the same session, so they appear in `pi.getAll…[fixture 截断，原长 2157]"
+    },
+    {
+      "url": "https://www.runoob.com/pi-agent/pi-agent-custom-tools.html",
+      "provider": "tavily",
+      "title": "Pi Agent 自定义工具开发 | 菜鸟教程",
+      "description": "// 文件路径：~/.pi/agent/extensions/read-logger.ts  \n import type { ExtensionAPI } from \"@earendil-works/pi-coding-agent\";  \n import { Type } from \"typebox\";  \n import { readFile } from \"node:fs/promises\";  \n import { resolve } from \"node:path\";  \n   \n export default function (pi: ExtensionAPI) {  \n   // 与内置工具同名即可覆盖，这里只给 read 增加日志  \n   pi.registerTool({  \n     name: \"read\",  \n     label: \"读取文件\",  \n     description: \"读取文件内容，并在终端记录访问日志\",  \n     parameters: Type.Object({  \n       path: Type.String({ description: \"要读取的文件路径\" }),  \n     }),  \n     async execute(\\_toolCallId, params, \\_signal, \\_onUpdate, ctx) {  \n       const absolutePath = resolve(ctx.cwd, params.path);  \n       const text = await readFile(absolutePath, \"utf8\");  \n       // 额外能力：记录一次访问日志 [...] // 文件路径：~/.pi/agent/extensions/note-edit.ts  \n import { withFileMutationQueue } from \"@earendil-works/pi-coding-agent\";  \n import { mkdir, readFile, writeFile } from \"node:fs/promises\";  \n import { dirname, resolve } from \"node:path\";  \n   \n // 以下片段位于 registerTool 的 execute 函数内  \n async execute(\\_toolCallId, params, \\_signal, \\_onUpdate, ctx) {  \n   // 将路径解析为绝对路径  \n   const absolutePath = resolve(ctx.cwd, params.path);  \n   \n   return withFileMutationQueue(absolutePath, async () => {  \n     // 确保目录存在  \n     await mkdir(dirname(absolutePath), { recursive: true });  \n     // 读取当前内容  \n     const current = await readFile(absolutePath, \"utf8\");  \n     // 应用修改  \n     const next = current.replace(params.oldText, params.newText);  \n     // 写回文件 [...] ## execute 函数详解\n\nexecute 函数接收以下参数：\n\n| 参数 | 类型 | 说明 |\n --- \n| toolCallId | string | 工具调用的唯一 ID |\n| params | 泛型 T | 经过 Schema 验证的参数对象 |\n| signal | AbortSignal | undefined | 取消信号，用户按 Escape 时触发 |\n| onUpdate | function | 发送进度更新的回调 |\n| ctx | ExtensionContext | 扩展上下文，提供 UI、会话等能力 |\n\n返回值格式：\n\n## 实例\n\n// 文件路径：~/.pi/agent/extensions/todo-tool.ts（execute 函数的返回值）  \n return {  \n   // 发送给 LLM 的内容（必需）  \n   content: [{ type: \"text\", text: \"操作完成\" }],  \n   \n   // 自定义详情数据，用于状态重建和渲染（可选）  \n   details: { …[fixture 截断，原长 2289]"
+    },
+    {
+      "url": "https://www.npmjs.com/package/%40vandeepunk%2Fpi-coding-agent",
+      "provider": "tavily",
+      "title": "@vandeepunk/pi-coding-agent - npm",
+      "description": "```\nexport default function (pi: ExtensionAPI) {\n  pi.registerTool({ name: \"deploy\", ... });\n  pi.registerCommand(\"stats\", { ... });\n  pi.on(\"tool_call\", async (event, ctx) => { ... });\n}\n```\n\nWhat's possible:\n\n Custom tools (or replace built-in tools entirely)\n Sub-agents and plan mode\n Custom compaction and summarization\n Permission gates and path protection\n Custom editors and UI components\n Status lines, headers, footers\n Git checkpointing and auto-commit\n SSH and sandbox execution\n MCP server integration\n Make pi look like Claude Code\n Games while waiting (yes, Doom runs)\n ...anything you can dream up\n\nPlace in `~/.pi/agent/extensions/`, `.pi/extensions/`, or a pi package to share with others. See docs/extensions.md and examples/extensions/.\n\n### Themes [...] Submit messages while the agent is working:\n\n Enter queues a steering message, delivered after the current assistant turn finishes executing its tool calls\n Alt+Enter queues a follow-up message, delivered only after the agent finishes all work\n Escape aborts and restores queued messages to editor\n Alt+Up retrieves queued messages back to editor\n\nOn Windows Terminal, `Alt+Enter` is fullscreen by default. Remap it in docs/terminal-setup.md so pi can receive the follow-up shortcut.\n\nConfigure delivery in settings: `steeringMode` and `followUpMode` can be `\"one-at-a-time\"` (default, waits for response) or `\"all\"` (delivers all queued at once). `transport` selects provider transport preference (`\"sse\"`, `\"websocket\"`, or `\"auto\"`) for providers that support multiple transports.\n\n## Sessions [...] ```\npi\n/login  # Then select provider\n```\n\nThen just talk to pi. By default, pi gives the model four tools: `read`, `write`, `edit`, and `bash`. The model uses these to fulfill your requests. Add capabilities via skills, prompt templates, extensions, or pi packages.\n\nPlatform notes: Windows | Termux (Android) | tmux | Terminal setup | Shell aliases\n\n## Providers & Models\n\nFor each built-in provider, pi maintains a list…[fixture 截断，原长 2314]"
+    },
+    {
+      "url": "https://zhuanlan.zhihu.com/p/2083955378535121230",
+      "provider": "tavily",
+      "title": "LLM之Agent（八十一）｜PI（二十）扩展Extension 开发指南",
+      "description": "Extension（扩展）是pi coding agent 的TypeScript 插件机制：一个默认导出的工厂函数，拿到ExtensionAPI 之后就能注册工具、命令、监听生命周期"
+    }
+  ],
+  "final_answer": "Research result for: pi coding agent 扩展 registerTool onUpdate 进度回调怎么用\n\nEvidence-backed findings:\n1. pi/packages/coding-agent/CHANGELOG.md at main (tavily)\n   Evidence excerpt: [Skip to content](#start-of-content) ## Navigation Menu [Sign in](/login?return_to=https%3A%2F%2Fgithub.com%2Fearendil-works%2Fpi%2Fblob%2Fmain%2Fpackages%2Fcoding-agent%2FCHANGELOG.md) Appearance settings [Sign in](/login?return_to=https%3A%2F%2Fgithub.com%2Fearendil-works%2Fpi%2Fblob%2Fmain%2Fpackages%2Fcoding-agent%2FCHANGELOG.md) [Sign up](/signup?ref_ct\n   Source: https://github.com/earendil-works/pi/blob/main/packages/coding-agent/CHANGELOG.md\n2. Extensions · Documentation (tavily)\n   Evidence excerpt: Extensions · Documentation · Pi Copy SVG[Download SVG](/logo-auto.svg)[Press Kit](/press-kit) [Home](/)[Documentation](/docs/latest)[News](/news)[Packages](/packages)[Models](/models) Menu [Home→](/)[Documentation→](/docs/latest)[News→](/news)[Packages→](/packages)[Models→](/models) [GitHub](https://github.com/earendil-works/pi/tree/main/packages/coding-agen\n   Source: https://pi.dev/docs/latest/extensions\n3. Pi Agent 自定义工具开发 | 菜鸟教程 (tavily)\n   Evidence excerpt: # [菜鸟教程 -- 学的不仅是技术，更是梦想！](/) * [Vue3 教程](/vue3/vue3-tutorial.html) * [Vue2 教程](/vue/vue-tutorial.html) * [Bootstrap3](/bootstrap/bootstrap-tutorial.html) * [Bootstrap4](/bootstrap4/bootstrap4-tutorial.html) * [Bootstrap5](/bootstrap5/bootstrap5-tutorial.html) * [机器学习](/ml/ml-tutorial.html) * [PyTorch](/pytorch/pytorch-tutorial.html) * [TensorFlow](/tensorflo\n   Source: https://www.runoob.com/pi-agent/pi-agent-custom-tools.html\n4. @vandeepunk/pi-coding-agent - npm (tavily)\n   Evidence excerpt: ⚠️ npm tokens that bypass 2FA are being restricted — account changes (Aug 2026) and direct publishing (Jan 2027). [Learn how to prepare →](https://github.blog/changelog/2026-07-08-npm-install-time-security-and-gat-bypass2fa-deprecation/) npm [Sign Up](/signup)[Sign In](/login) # @vandeepunk/pi-coding-agent TypeScript icon, indicating that this…[fixture 截断，原长 2583]",
+  "content": "Research result for: pi coding agent 扩展 registerTool onUpdate 进度回调怎么用\n\nEvidence-backed findings:\n1. pi/packages/coding-agent/CHANGELOG.md at main (tavily)\n   Evidence excerpt: [Skip to content](#start-of-content) ## Navigation Menu [Sign in](/login?return_to=https%3A%2F%2Fgithub.com%2Fearendil-works%2Fpi%2Fblob%2Fmain%2Fpackages%2Fcoding-agent%2FCHANGELOG.md) Appearance settings [Sign in](/login?return_to=https%3A%2F%2Fgithub.com%2Fearendil-works%2Fpi%2Fblob%2Fmain%2Fpackages%2Fcoding-agent%2FCHANGELOG.md) [Sign up](/signup?ref_ct\n   Source: https://github.com/earendil-works/pi/blob/main/packages/coding-agent/CHANGELOG.md\n2. Extensions · Documentation (tavily)\n   Evidence excerpt: Extensions · Documentation · Pi Copy SVG[Download SVG](/logo-auto.svg)[Press Kit](/press-kit) [Home](/)[Documentation](/docs/latest)[News](/news)[Packages](/packages)[Models](/models) Menu [Home→](/)[Documentation→](/docs/latest)[News→](/news)[Packages→](/packages)[Models→](/models) [GitHub](https://github.com/earendil-works/pi/tree/main/packages/coding-agen\n   Source: https://pi.dev/docs/latest/extensions\n3. Pi Agent 自定义工具开发 | 菜鸟教程 (tavily)\n   Evidence excerpt: # [菜鸟教程 -- 学的不仅是技术，更是梦想！](/) * [Vue3 教程](/vue3/vue3-tutorial.html) * [Vue2 教程](/vue/vue-tutorial.html) * [Bootstrap3](/bootstrap/bootstrap-tutorial.html) * [Bootstrap4](/bootstrap4/bootstrap4-tutorial.html) * [Bootstrap5](/bootstrap5/bootstrap5-tutorial.html) * [机器学习](/ml/ml-tutorial.html) * [PyTorch](/pytorch/pytorch-tutorial.html) * [TensorFlow](/tensorflo\n   Source: https://www.runoob.com/pi-agent/pi-agent-custom-tools.html\n4. @vandeepunk/pi-coding-agent - npm (tavily)\n   Evidence excerpt: ⚠️ npm tokens that bypass 2FA are being restricted — account changes (Aug 2026) and direct publishing (Jan 2027). [Learn how to prepare →](https://github.blog/changelog/2026-07-08-npm-install-time-security-and-gat-bypass2fa-deprecation/) npm [Sign Up](/signup)[Sign In](/login) # @vandeepunk/pi-coding-agent TypeScript icon, indicating that this…[fixture 截断，原长 2583]",
+  "citations": [
+    {
+      "url": "https://github.com/earendil-works/pi/blob/main/packages/coding-agent/CHANGELOG.md",
+      "title": "pi/packages/coding-agent/CHANGELOG.md at main",
+      "provider": "tavily"
+    },
+    {
+      "url": "https://pi.dev/docs/latest/extensions",
+      "title": "Extensions · Documentation",
+      "provider": "tavily"
+    },
+    {
+      "url": "https://www.runoob.com/pi-agent/pi-agent-custom-tools.html",
+      "title": "Pi Agent 自定义工具开发 | 菜鸟教程",
+      "provider": "tavily"
+    },
+    {
+      "url": "https://www.npmjs.com/package/%40vandeepunk%2Fpi-coding-agent",
+      "title": "@vandeepunk/pi-coding-agent - npm",
+      "provider": "tavily"
+    },
+    {
+      "url": "https://zhuanlan.zhihu.com/p/2083955378535121230",
+      "title": "LLM之Agent（八十一）｜PI（二十）扩展Extension 开发指南",
+      "provider": "firecrawl"
+    }
+  ],
+  "evidence_items": [
+    {
+      "id": "e1eb959bd42c4",
+      "url": "https://github.com/earendil-works/pi/blob/main/packages/coding-agent/CHANGELOG.md",
+      "title": "pi/packages/coding-agent/CHANGELOG.md at main",
+      "provider": "tavily",
+      "source_type": "fetched_page",
+      "subquestion_id": "",
+      "content": "[Skip to content](#start-of-content)   \n \n \n\n## Navigation Menu\n\n[Sign in](/login?return_to=https%3A%2F%2Fgithub.com%2Fearendil-works%2Fpi%2Fblob%2Fmain%2Fpackages%2Fcoding-agent%2FCHANGELOG.md)\n\nAppearance settings\n\n[Sign in](/login?return_to=https%3A%2F%2Fgithub.com%2Fearendil-works%2Fpi%2Fblob%2Fmain%2Fpackages%2Fcoding-agent%2FCHANGELOG.md)\n\n[Sign up](/signup?ref_cta=Sign+up&ref_loc=header+logged+out&ref_page=%2F%3Cuser-name%3E%2F%3Crepo-name%3E%2Fblob%2Fshow&source=header-repo&source_repo=earendil-works%2Fpi)\n\nAppearance settings\n\nYou signed in with another tab or window. Reload to refresh your session. You signed out in another tab or window. Reload to refresh your session. You switched accounts on another tab or window. Reload to refresh your session. Dismiss alert\n\n{{ message }}\n\n[earendil-works](/earendil-works)   /  **[pi](/earendil-works/pi)**  Public\n\n* [Notifications](/login?return_to=%2Fearendil-works%2Fpi)  You must be signed in to change notification settings\n* [Fork 14k](/login?return_to=%2Fearendil-works%2Fpi)\n* [Star  110k](/login?return_to=%2Fearendil-works%2Fpi)\n\n## Expand file tree\n\n/\n\n# CHANGELOG.md\n\nCopy path\n\nMore file actions\n\nMore file actions\n\n## Latest commit\n\n## History\n\n[History](/earendil-works/pi/commits/main/packages/coding-agent/CHANGELOG.md)\n\nHistory\n\n5887 lines (4131 loc) · 566 KB\n\n/\n\n# CHANGELOG.md\n\nCopy path\n\n## File metadata and controls\n\n5887 lines (4131 loc) · 566 KB\n\nCopy raw file\n\nDownload raw file\n\nOutline\n\nEdit and raw actions\n\nYou can’t perform that action at this time.\n\n ",
+      "content_len": 1544,
+      "verified": true
+    },
+    {
+      "id": "e968710e7423a",
+      "url": "https://pi.dev/docs/latest/extensions",
+      "title": "Extensions · Documentation",
+      "provider": "tavily",
+      "source_type": "fetched_page",
+      "subquestion_id": "",
+      "content": "Extensions · Documentation · Pi\n\n\n\nCopy SVG[Download SVG](/logo-auto.svg)[Press Kit](/press-kit)\n\n[Home](/)[Documentation](/docs/latest)[News](/news)[Packages](/packages)[Models](/models)\n\nMenu\n\n[Home→](/)[Documentation→](/docs/latest)[News→](/news)[Packages→](/packages)[Models→](/models)\n\n[GitHub](https://github.com/earendil-works/pi/tree/main/packages/coding-agent)[npm](https://www.npmjs.com/package/@earendil-works/pi-coding-agent)[Discord](https://discord.com/invite/3cU7Bz4UPx)[X](https://x.com/pidotdev)\n\n[Earendil Inc.](https://earendil.com \"Earendil Inc. website\")\n\n[Home→](/)[Documentation→](/docs/latest)[News→](/news)[Packages→](/packages)[Models→](/models)\n\n[GitHub](https://github.com/earendil-works/pi/tree/main/packages/coding-agent)[npm](https://www.npmjs.com/package/@earendil-works/pi-coding-agent)[Discord](https://discord.com/invite/3cU7Bz4UPx)[X](https://x.com/pidotdev)\n\n[Earendil Inc.](https://earendil.com \"Earendil Inc. website\")\n\nDocumentation\n\nGuides and references for configuring and extending Pi.\n\nNavigation\n\nOn this page\n\n[Table of Contents](#table-of-contents)[Quick Start](#quick-start)[Extension Locations](#extension-locations)[Available Imports](#available-imports)[Writing an Extension](#writing-an-extension)[Async factory functions](#async-factory-functions)[Long-lived resources and shutdown](#long-lived-resources-and-shutdown)[Extension Styles](#extension-styles)[Events](#events)[Lifecycle Overview](#lifecycle-overview)[Startup Events](#startup-events)[Resource Events](#resource-events)[Session Events](#session-events)[Agent Events](#agent-events)[Model Events](#model-events)[Tool Events](#tool-events)[User Bash Events](#user-bash-events)[Input Events](#input-events)[ExtensionContext](#extensioncontext)[ctx.ui](#ctxui)[ctx.mode](#ctxmode)[ctx.hasUI](#ctxhasui)[ctx.cwd](#ctxcwd)[ctx.isProjectTrusted()](#ctxisprojecttrusted)[ctx.sessionManager](#ctxsessionmanager)[ctx.modelRegistry / ctx.model / ctx.thinkingLevel / ctx.scopedModels](#ctxmodelre…[fixture 截断，原长 139253]",
+      "content_len": 139253,
+      "verified": true
+    },
+    {
+      "id": "e1c210a8f3cc3",
+      "url": "https://www.runoob.com/pi-agent/pi-agent-custom-tools.html",
+      "title": "Pi Agent 自定义工具开发 | 菜鸟教程",
+      "provider": "tavily",
+      "source_type": "fetched_page",
+      "subquestion_id": "",
+      "content": "# [菜鸟教程 -- 学的不仅是技术，更是梦想！](/)\n\n* [Vue3 教程](/vue3/vue3-tutorial.html)\n* [Vue2 教程](/vue/vue-tutorial.html)\n\n* [Bootstrap3](/bootstrap/bootstrap-tutorial.html)\n* [Bootstrap4](/bootstrap4/bootstrap4-tutorial.html)\n* [Bootstrap5](/bootstrap5/bootstrap5-tutorial.html)\n\n* [机器学习](/ml/ml-tutorial.html)\n* [PyTorch](/pytorch/pytorch-tutorial.html)\n* [TensorFlow](/tensorflow/tensorflow-tutorial.html)\n* [Sklearn](/sklearn/sklearn-tutorial.html)\n* [NLP](/nlp/nlp-tutorial.html)\n* [AI Agent](/ai-agent/ai-agent-tutorial.html)\n* [Ollama](/ollama/ollama-tutorial.html)\n* [Coding Plan](/claude-code/coding-plan.html)\n\nPi Agent\n\n[Pi Agent 教程](/pi-agent/pi-agent-tutorial.html \"Pi Agent 教程\")   [Pi Agent 简介](/pi-agent/pi-agent-intro.html \"Pi Agent 简介\")   [Pi Agent 核心概念](/pi-agent/pi-agent-concepts.html \"Pi Agent 核心概念\")   [Pi Agent 安装](/pi-agent/pi-agent-install.html \"Pi Agent 安装\")   [Pi Agent 认证与模型配置](/pi-agent/pi-agent-auth.html \"Pi Agent 认证与模型配置\")  [Pi Agent DeepSeek](/pi-agent/pi-agent-deepseek.html \"Pi Agent DeepSeek\")  [PI Agent 第一次对话](/pi-agent/pi-agent-first-chat.html \"PI Agent 第一次对话\")   [Pi Agent 交互模式](/pi-agent/pi-agent-interactive.html \"Pi Agent 交互模式\")   [Pi Agent 非交互模式](/pi-agent/pi-agent-non-interactive.html \"Pi Agent 非交互模式\")   [PI Agent 上下文管理](/pi-agent/pi-agent-context.html \"PI Agent 上下文管理\")   [Pi Agent 会话管理](/pi-agent/pi-agent-sessions.html \"Pi Agent 会话管理\")   [Pi Agent 键盘快捷键定制](/pi-agent/pi-agent-keybindings.html \"Pi Agent 键盘快捷键定制\")   [Pi Agent 主题定制](/pi-agent/pi-agent-themes.html \"Pi Agent 主题定制\")   [Pi Agent 提示词模板](/pi-agent/pi-agent-prompt-templates.html \"Pi Agent 提示词模板\")   [Pi Agent Skills 技能系统](/pi-agent/pi-agent-skills.html \"Pi Agent Skills 技能系统\")   [Pi Agent 配置详解](/pi-agent/pi-agent-settings.html \"Pi Agent 配置详解\")   [Pi Agent 安全与项目信任](/pi-agent/pi-agent-security.html \"Pi Agent 安全与项目信任\")   [Pi Agent 扩展入门](/pi-agent/pi-agent-extensions-intro.html \"Pi Agent 扩展入门\")   [Pi Agent 自定义工具开发](/pi-agent/pi-agent-custom-tools.html \"Pi Agent 自定义工具开发\")   [Pi Agent 事件系统](/pi-agent/pi-agen…[fixture 截断，原长 28291]",
+      "content_len": 28291,
+      "verified": true
+    },
+    {
+      "id": "e7540d6283694",
+      "url": "https://www.npmjs.com/package/%40vandeepunk%2Fpi-coding-agent",
+      "title": "@vandeepunk/pi-coding-agent - npm",
+      "provider": "tavily",
+      "source_type": "fetched_page",
+      "subquestion_id": "",
+      "content": "⚠️\n\nnpm tokens that bypass 2FA are being restricted — account changes (Aug 2026) and direct publishing (Jan 2027). [Learn how to prepare →](https://github.blog/changelog/2026-07-08-npm-install-time-security-and-gat-bypass2fa-deprecation/)\n\nnpm\n\n[Sign Up](/signup)[Sign In](/login)\n\n# @vandeepunk/pi-coding-agent TypeScript icon, indicating that this package has built-in type declarations\n\n1.0.0 • Public • Published\n\n* [Readme](?activeTab=readme)\n* [Code Beta](?activeTab=code)\n* [20 Dependencies](?activeTab=dependencies)\n* [0 Dependents](?activeTab=dependents)\n* [7 Versions](?activeTab=versions)\n\n# 🏖️ OSS Weekend\n\n**Issue tracker reopens Monday, April 13, 2026.**\n\nOSS weekend runs Thursday, April 2, 2026 through Monday, April 13, 2026. New issues and PRs from unapproved contributors are auto-closed during this time. Approved contributors can still open issues and PRs if something is genuinely urgent, but please keep that to pressing matters only. For support, join [Discord](https://discord.com/invite/3cU7Bz4UPx).\n\n> *Current focus: at the moment i'm deep in refactoring internals, and need to focus.*\n\n---\n\n[![pi logo](https://camo.githubusercontent.com/8b5a446dcbd5bea234898b8584e5484099dc0a939d8e59e542b7f5f23b259217/68747470733a2f2f736869747479636f64696e676167656e742e61692f6c6f676f2e737667)](https://shittycodingagent.ai)\n\n[![Discord](https://camo.githubusercontent.com/953294acc08eb8150a8cafc213631144bebb20fea7bd4e407ef813d6c121dfd8/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f646973636f72642d636f6d6d756e6974792d3538363546323f7374796c653d666c61742d737175617265266c6f676f3d646973636f7264266c6f676f436f6c6f723d7768697465)](https://discord.com/invite/3cU7Bz4UPx)\n[![npm](https://camo.githubusercontent.com/61951e75dc98d0b019d4cadbccfc8e19eb6d70d3edcca83afb46d250b7323950/68747470733a2f2f696d672e736869656c64732e696f2f6e706d2f762f406d6172696f7a6563686e65722f70692d636f64696e672d6167656e743f7374796c653d666c61742d737175617265)](https://www.npmjs.com/package/@mariozechner…[fixture 截断，原长 26764]",
+      "content_len": 26764,
+      "verified": true
+    },
+    {
+      "id": "edb62acb5ee16",
+      "url": "https://zhuanlan.zhihu.com/p/2083955378535121230",
+      "title": "LLM之Agent（八十一）｜PI（二十）扩展Extension 开发指南",
+      "provider": "firecrawl",
+      "source_type": "fetched_page",
+      "subquestion_id": "",
+      "content": "![](https://zhuanlan.zhihu.com/p/2083955378535121230)\n\n![ZhiHu logo](https://static.zhihu.com/heifetz/assets/wechat-share-logo.39ea9ecd.png)\n\n![LLM之Agent（八十一）｜PI（二十）扩展 Extension 开发指南](https://pic1.zhimg.com/v2-6bb8f35347fd808e0f244339d796d5d0_720w.jpg?source=172ae18b)\n\n> Extension（扩展）是 pi coding agent 的 TypeScript [插件机制](https://zhida.zhihu.com/search?content_id=283806153&content_type=Article&match_order=1&q=%E6%8F%92%E4%BB%B6%E6%9C%BA%E5%88%B6&zd_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ6aGlkYV9zZXJ2ZXIiLCJleHAiOjE3OTA3NDE4NDMsInEiOiLmj5Lku7bmnLrliLYiLCJ6aGlkYV9zb3VyY2UiOiJlbnRpdHkiLCJjb250ZW50X2lkIjoyODM4MDYxNTMsImNvbnRlbnRfdHlwZSI6IkFydGljbGUiLCJtYXRjaF9vcmRlciI6MSwiemRfdG9rZW4iOm51bGx9.QTBhyrcDkLJZn-0ULxiBAqP9KawaakGAAhId2KwippI&zhida_source=entity)：一个默认导出的[工厂函数](https://zhida.zhihu.com/search?content_id=283806153&content_type=Article&match_order=1&q=%E5%B7%A5%E5%8E%82%E5%87%BD%E6%95%B0&zd_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ6aGlkYV9zZXJ2ZXIiLCJleHAiOjE3OTA3NDE4NDMsInEiOiLlt6XljoLlh73mlbAiLCJ6aGlkYV9zb3VyY2UiOiJlbnRpdHkiLCJjb250ZW50X2lkIjoyODM4MDYxNTMsImNvbnRlbnRfdHlwZSI6IkFydGljbGUiLCJtYXRjaF9vcmRlciI6MSwiemRfdG9rZW4iOm51bGx9.IiuxLo2bna6M2cbMkBXYGD0r1-n1coC-JbcLAbSYM40&zhida_source=entity)，拿到 `ExtensionAPI` 之后就能注册工具、命令、监听生命周期事件、定制 UI——本篇基于 `docs/extensions.md` 和 `examples/extensions/` 里的真实示例，讲清楚这套机制怎么用。\n\n## **学习目标**\n\n- 知道扩展文件应该放在哪些目录、如何用 `--extension`/`-e` 快速试跑一个扩展。\n- 理解扩展工厂函数的签名、同步/异步两种写法，以及\"单文件 / 目录 / 带依赖的包\"三种组织形式的适用场景。\n- 掌握 `pi.registerTool()` 注册自定义工具的核心字段（`parameters`、`execute`、`promptSnippet`/`promptGuidelines`），并知道自定义的文件修改工具为什么必须接入 `withFileMutationQueue`。\n- 掌握 `pi.on(event, handler)` 监听事件、拦截/修改工具调用（以 `tool_call` 为例）的写法。\n- 能照抄本文给出的最小可运行示例改出自己的第一个扩展，并知道去哪里找更多参考实现。\n\n## **扩展是什么、放在哪里**\n\n扩展是一个 TypeScript 模块，默认导出一个工厂函数，接收 `ExtensionAPI` 作为参数：\n\n```ts\nimport type { ExtensionAPI } from \"@earendil-works/pi-coding-agent\";\n\nexport default function (pi: ExtensionAPI) {\n  // 在这里注册事件监听、工具、命令……\n}\n```\n\n**安全提醒**（文档原文）：扩展以你的完整系统权限运行，可以执行任意代码，只…[fixture 截断，原长 26006]",
+      "content_len": 26006,
+      "verified": true
+    }
+  ],
+  "gap_check": {
+    "status": "closed",
+    "gaps": [],
+    "stop_reason": "evidence_converged"
+  },
+  "provider_attempts": [
+    {
+      "capability": "web_search",
+      "provider": "tavily",
+      "status": "ok",
+      "error_type": "",
+      "error": "",
+      "elapsed_ms": 3979.83,
+      "result_count": 5
+    },
+    {
+      "capability": "web_fetch",
+      "provider": "tavily",
+      "status": "ok",
+      "error_type": "",
+      "error": "",
+      "elapsed_ms": 3869.77,
+      "result_count": 1
+    },
+    {
+      "capability": "web_fetch",
+      "provider": "tavily",
+      "status": "ok",
+      "error_type": "",
+      "error": "",
+      "elapsed_ms": 1757.75,
+      "result_count": 1
+    },
+    {
+      "capability": "web_fetch",
+      "provider": "tavily",
+      "status": "ok",
+      "error_type": "",
+      "error": "",
+      "elapsed_ms": 1449.04,
+      "result_count": 1
+    },
+    {
+      "capability": "web_fetch",
+      "provider": "tavily",
+      "status": "ok",
+      "error_type": "",
+      "error": "",
+      "elapsed_ms": 1231.1,
+      "result_count": 1
+    },
+    {
+      "capability": "web_fetch",
+      "provider": "tavily",
+      "status": "empty",
+      "error_type": "",
+      "error": "",
+      "elapsed_ms": 1823.35,
+      "result_count": 0
+    },
+    {
+      "capability": "web_fetch",
+      "provider": "firecrawl",
+      "status": "ok",
+      "error_type": "",
+      "error": "",
+      "elapsed_ms": 7022.49,
+      "result_count": 1
+    }
+  ],
+  "provider_notices": [],
+  "providers_used": [
+    "tavily",
+    "firecrawl"
+  ],
+  "fallback_used": true,
+  "degraded": false,
+  "route_policy_version": "research-router-v1",
+  "evidence_dir": "/tmp/smart-search-evidence/20260927-2117-pi-coding-agent-扩展-registertool-onupdate-进度回调怎么用",
+  "minimum_profile_ok": true,
+  "capability_status": {
+    "main_search": {
+      "configured": [
+        "xai-responses"
+      ],
+      "fallback_chain": [
+        "xai-responses",
+        "openai-compatible"
+      ],
+      "ok": true
+    },
+    "web_search": {
+      "configured": [
+        "tavily",
+        "firecrawl"
+      ],
+      "fallback_chain": [
+        "zhipu",
+        "zhipu-mcp",
+        "tavily",
+        "firecrawl",
+        "tinyfish"
+      ],
+      "ok": true
+    },
+    "docs_search": {
+      "configured": [
+        "exa"
+      ],
+      "fallback_chain": [
+        "context7",
+        "exa"
+      ],
+      "ok": true
+    },
+    "web_fetch": {
+      "configured": [
+        "tavily",
+        "firecrawl"
+      ],
+      "fallback_chain": [
+        "tavily",
+        "jina",
+        "zhipu-mcp-reader",
+        "firecrawl",
+        "tinyfish"
+      ],
+      "ok": true
+    },
+    "vertical_search": {
+      "configured": [],
+      "fallback_chain": [
+        "anysearch"
+      ],
+      "experimental": true,
+      "explicit_only": [
+        "sciverse"
+      ],
+      "route_enabled": {
+        "anysearch": true,
+        "sciverse": false
+      },
+      "ok": false
+    }
+  },
+  "elapsed_ms": 21144.89
+}

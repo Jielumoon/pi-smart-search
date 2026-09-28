@@ -1,0 +1,50 @@
+{
+  "ok": false,
+  "url": "not-a-url",
+  "provider": "",
+  "content": "",
+  "error_type": "parameter_error",
+  "error": "HTTP 400: {\"success\":false,\"code\":\"BAD_REQUEST\",\"error\":\"URL must have a valid top-level domain or be an IP address\",\"details\":[{\"code\":\"custom\",\"path\":[\"url\"],\"message\":\"URL must have a valid top-level domain or be an IP address\"}]}",
+  "provider_attempts": [
+    {
+      "capability": "web_fetch",
+      "provider": "tavily",
+      "status": "error",
+      "error_type": "parameter_error",
+      "error": "HTTP 400: {\"detail\":{\"error\":\"All URLs failed validation.\",\"failed_results\":[{\"url\":\"not-a-url\",\"error\":\"Validation Error: Invalid URL format\"}]}}",
+      "elapsed_ms": 1506.37,
+      "result_count": 0
+    },
+    {
+      "capability": "web_fetch",
+      "provider": "firecrawl",
+      "status": "error",
+      "error_type": "parameter_error",
+      "error": "HTTP 400: {\"success\":false,\"code\":\"BAD_REQUEST\",\"error\":\"URL must have a valid top-level domain or be an IP address\",\"details\":[{\"code\":\"custom\",\"path\":[\"url\"],\"message\":\"URL must have a valid top-level domain or be an IP address\"}]}",
+      "elapsed_ms": 1123.54,
+      "result_count": 0
+    }
+  ],
+  "provider_notices": [
+    {
+      "provider": "tavily",
+      "capability": "web_fetch",
+      "status": "failed",
+      "error_type": "parameter_error",
+      "error": "HTTP 400: {\"detail\":{\"error\":\"All URLs failed validation.\",\"failed_results\":[{\"url\":\"not-a-url\",\"error\":\"Validation Error: Invalid URL format\"}]}}",
+      "cooldown_remaining_seconds": 0.0,
+      "hint": ""
+    },
+    {
+      "provider": "firecrawl",
+      "capability": "web_fetch",
+      "status": "failed",
+      "error_type": "parameter_error",
+      "error": "HTTP 400: {\"success\":false,\"code\":\"BAD_REQUEST\",\"error\":\"URL must have a valid top-level domain or be an IP address\",\"details\":[{\"code\":\"custom\",\"path\":[\"url\"],\"message\":\"URL must have a valid top-level domain or be an IP address\"}]}",
+      "cooldown_remaining_seconds": 0.0,
+      "hint": ""
+    }
+  ],
+  "fallback_used": true,
+  "elapsed_ms": 2630.1
+}

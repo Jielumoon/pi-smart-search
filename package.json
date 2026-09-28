@@ -1,0 +1,33 @@
+{
+  "name": "pi-smart-search",
+  "version": "0.1.0",
+  "description": "pi 扩展：通过 smart-search CLI 的 JSON 契约提供联网搜索、网页抓取与深度研究",
+  "keywords": [
+    "pi-package",
+    "pi-extension",
+    "search",
+    "smart-search"
+  ],
+  "type": "module",
+  "license": "MIT",
+  "pi": {
+    "extensions": [
+      "./index.ts"
+    ]
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-ai": "*",
+    "@earendil-works/pi-coding-agent": "*",
+    "@earendil-works/pi-tui": "*",
+    "typebox": "*"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.8"
+  }
+}
