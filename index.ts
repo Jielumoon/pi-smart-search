@@ -215,6 +215,7 @@ export default function smartSearchExtension(pi: ExtensionAPI) {
 		promptGuidelines: [
 			"Use smart_search_search for questions that need current or external web information, and cite the numbered source URLs it returns.",
 			"Use smart_search_fetch instead of smart_search_search when you already know the URL to read.",
+			"Never write a date from memory into Smart Search queries or filters: for today or latest-news questions leave the date out (smart_search_search's main search adds the current local date itself), and when you need an explicit date, such as smart_search_exa_search start_published_date, use one the user gave or the retrieved date shown in smart_search_search and smart_search_research results.",
 		],
 		parameters: Type.Object({
 			query: Type.String({ description: "Focused search query." }),

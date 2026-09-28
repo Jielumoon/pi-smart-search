@@ -1,7 +1,7 @@
 import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
 	formatContext7Docs,
 	formatContext7Library,
@@ -101,6 +101,28 @@ describe("formatSearch", () => {
 	it("extra_sources 单独列出并注明不作为回答依据", () => {
 		expect(formatSearch({ content: "a", extra_sources: [{ url: "https://y.dev", title: "Y" }] })).toContain(
 			"Extra sources (not used as evidence for the answer):\n- Y — https://y.dev",
+		);
+	});
+});
+
+describe("检索日期", () => {
+	afterEach(() => {
+		vi.useRealTimers();
+	});
+
+	// 取当天最早和最晚的时刻：误用 UTC 日期（toISOString）的话，东、西时区至少会错一个
+	it.each([
+		["00:30", 0],
+		["23:30", 23],
+	])("search 和 research 的元信息行带本地检索日期（当天 %s）", async (_label, hour) => {
+		vi.useFakeTimers({ toFake: ["Date"] });
+		vi.setSystemTime(new Date(2026, 8, 28, hour, 30));
+		expect(formatSearch({ content: "a", provider: "xai-responses", elapsed_ms: 1000 })).toContain(
+			"Smart Search: xai-responses, 1.0s, retrieved 2026-09-28",
+		);
+		const dir = mkdtempSync(join(tmpdir(), "fmt-"));
+		expect(await formatResearch({ question: "q", budget: "quick", elapsed_ms: 1000, gap_check: { status: "closed" } }, dir)).toContain(
+			"budget=quick, 1.0s, gap_check=closed, retrieved 2026-09-28",
 		);
 	});
 });

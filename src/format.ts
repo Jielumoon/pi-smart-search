@@ -33,6 +33,13 @@ function bytes(text: string): string {
 	return formatSize(Buffer.byteLength(text, "utf8"));
 }
 
+// pi 的系统提示词不带当前日期（pi #6621），模型只能从结果里得知今天是哪天；按本地时区，与 CLI 给主搜索的时间上下文一致
+function retrieved(): string {
+	const now = new Date();
+	const pad = (value: number) => String(value).padStart(2, "0");
+	return `retrieved ${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+}
+
 function json(data: unknown): string {
 	return JSON.stringify(data, null, 2);
 }
@@ -76,7 +83,7 @@ export function formatSearch(data: Json): string {
 		str(data.content) || "(empty answer)",
 		sources.length > 0 ? `Sources:\n${sources.join("\n")}` : "",
 		extras.length > 0 ? `Extra sources (not used as evidence for the answer):\n${extras.join("\n")}` : "",
-		`Smart Search: ${inline(data.provider) || "?"}${model ? ` (${model})` : ""}, ${seconds(data.elapsed_ms)}`,
+		`Smart Search: ${inline(data.provider) || "?"}${model ? ` (${model})` : ""}, ${seconds(data.elapsed_ms)}, ${retrieved()}`,
 		formatWarnings(data),
 	]);
 }
@@ -98,7 +105,7 @@ export async function formatResearch(data: Json, dir: string): Promise<string> {
 	const stopReason = inline(gapCheck.stop_reason);
 	const lines = [
 		`Research: ${inline(data.question, 1000)}`,
-		`budget=${inline(data.budget) || "?"}, ${seconds(data.elapsed_ms)}, gap_check=${inline(gapCheck.status) || "?"}${stopReason ? ` (${stopReason})` : ""}`,
+		`budget=${inline(data.budget) || "?"}, ${seconds(data.elapsed_ms)}, gap_check=${inline(gapCheck.status) || "?"}${stopReason ? ` (${stopReason})` : ""}, ${retrieved()}`,
 		`${items.length} evidence item(s); full page text is saved in ${dir}`,
 	];
 	for (const [index, item] of items.entries()) {
