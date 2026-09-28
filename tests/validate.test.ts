@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { SmartSearchError } from "../src/runner.ts";
-import { isPrivateHost, MAX_INPUT_BYTES, normalizePublicUrl, normalizeText } from "../src/validate.ts";
+import { assertNoPrivateUrls, isPrivateHost, MAX_INPUT_BYTES, normalizePublicUrl, normalizeText } from "../src/validate.ts";
 
 function invalidInput(run: () => unknown): string {
 	try {
@@ -38,6 +38,8 @@ describe("normalizePublicUrl", () => {
 		["  http://EXAMPLE.com  ", "http://example.com/"],
 		["https://8.8.8.8/", "https://8.8.8.8/"],
 		["https://172.32.0.1/", "https://172.32.0.1/"],
+		["https://100.128.0.1/", "https://100.128.0.1/"],
+		["https://[64:ff9b::808:808]/", "https://[64:ff9b::808:808]/"],
 		["https://[2001:db8::1]/", "https://[2001:db8::1]/"],
 		["https://localhost.example.com/", "https://localhost.example.com/"],
 	])("放行公网地址 %s", (input, expected) => {
@@ -74,12 +76,41 @@ describe("normalizePublicUrl", () => {
 		"http://[fd00::1]/",
 		"http://[fc00::1]/",
 		"http://[fe80::1]/",
+		"http://100.64.0.1/",
+		"http://100.127.255.255/",
+		"http://[::ffff:0:127.0.0.1]/",
+		"http://[::127.0.0.1]/",
+		"http://[64:ff9b::7f00:1]/",
+		"http://[64:ff9b::a00:1]/",
 	])("拒绝内网或本机地址 %s", (input) => {
 		expect(invalidInput(() => normalizePublicUrl(input))).toContain("private network");
 	});
 
 	it("错误信息使用传入的参数名", () => {
 		expect(invalidInput(() => normalizePublicUrl("nope", "seed_url"))).toContain("seed_url must be an absolute");
+	});
+});
+
+describe("assertNoPrivateUrls", () => {
+	it.each([
+		"summarize http://192.168.1.1/admin?token=abc",
+		"看下 http://localhost:3000/。",
+		"(see http://127.0.0.1:8080)",
+		"两个地址：https://example.com/ 和 http://10.0.0.1/",
+	])("拒绝夹带内网 URL 的 query：%s", (query) => {
+		const message = invalidInput(() => assertNoPrivateUrls(query, "query"));
+		expect(message).toContain("query contains a local or private network URL");
+		expect(message).not.toContain("token=abc");
+	});
+
+	it.each([
+		"what is localhost",
+		"summarize https://example.com/a?b=1",
+		// 上游的提取规则区分大小写，大写协议不会被抓取
+		"HTTP://127.0.0.1 status code meaning",
+		"http:// 是什么",
+	])("放行：%s", (query) => {
+		expect(assertNoPrivateUrls(query, "query")).toBe(query);
 	});
 });
 

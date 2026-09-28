@@ -1,6 +1,6 @@
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { basename, dirname, join } from "node:path";
+import { spawnSync } from "node:child_process";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { basename, delimiter, dirname, join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
 	buildArgs,
@@ -11,40 +11,9 @@ import {
 	type CliCall,
 	type RunOptions,
 } from "../src/runner.ts";
+import { FAKE_CLI, fake, fixture, useFakeCli } from "./helpers.ts";
 
-const FAKE_CLI = join(import.meta.dirname, "fake-smart-search.mjs");
-const FIXTURES = join(import.meta.dirname, "fixtures");
-const ENV_PREFIXES = ["PI_SMART_SEARCH_", "FAKE_SMART_SEARCH_"];
-
-let savedEnv: Record<string, string | undefined>;
-let workDir: string;
-
-beforeEach(() => {
-	savedEnv = Object.fromEntries(
-		Object.keys(process.env)
-			.filter((key) => ENV_PREFIXES.some((prefix) => key.startsWith(prefix)))
-			.map((key) => [key, process.env[key]]),
-	);
-	for (const key of Object.keys(savedEnv)) delete process.env[key];
-	process.env.PI_SMART_SEARCH_BIN = FAKE_CLI;
-	workDir = mkdtempSync(join(tmpdir(), "pi-smart-search-test-"));
-});
-
-afterEach(() => {
-	for (const key of Object.keys(process.env)) {
-		if (ENV_PREFIXES.some((prefix) => key.startsWith(prefix))) delete process.env[key];
-	}
-	Object.assign(process.env, savedEnv);
-	rmSync(workDir, { recursive: true, force: true });
-});
-
-function fake(mode: string, extra: Record<string, string> = {}): void {
-	Object.assign(process.env, { FAKE_SMART_SEARCH_MODE: mode, ...extra });
-}
-
-function fixture(name: string): string {
-	return readFileSync(join(FIXTURES, name), "utf8");
-}
+const workDir = useFakeCli();
 
 async function expectFailure(call: CliCall, type: string, options?: RunOptions): Promise<SmartSearchError> {
 	const error = await runSmartSearch(call, options).then(
@@ -194,8 +163,27 @@ describe("runSmartSearch", () => {
 		await expectFailure({ command: ["research"], positionals: ["q"] }, "output_too_large", { maxOutputBytes: 1024 });
 	});
 
+	it("成败以 ok 字段为准，不看退出码", async () => {
+		fake("stdout", { FAKE_SMART_SEARCH_STDOUT: '{"ok":true,"content":"x"}', FAKE_SMART_SEARCH_EXIT: "1" });
+		expect((await runSmartSearch({ command: ["search"], positionals: ["q"] })).data.content).toBe("x");
+		fake("stdout", { FAKE_SMART_SEARCH_STDOUT: '{"ok":false,"error_type":"quality_error","error":"weak"}', FAKE_SMART_SEARCH_EXIT: "0" });
+		await expectFailure({ command: ["search"], positionals: ["q"] }, "quality_error");
+	});
+
+	it("stderr 只保留尾部，argparse 的最后一行错误不会被截掉", async () => {
+		fake("stdout", { FAKE_SMART_SEARCH_STDERR: `${"x".repeat(5000)}\nFINAL ERROR LINE`, FAKE_SMART_SEARCH_EXIT: "2" });
+		const error = await expectFailure({ command: ["search"], positionals: ["q"] }, "invalid_output");
+		expect(error.message).toContain("FINAL ERROR LINE");
+	});
+
+	it.each(["0", "-1", "abc", "1.5", "3000000000"])("PI_SMART_SEARCH_TIMEOUT_MS=%s 非法时回落到默认值", async (value) => {
+		process.env.PI_SMART_SEARCH_TIMEOUT_MS = value;
+		fake("echo");
+		expect((await runSmartSearch({ command: ["route"], positionals: ["q"] })).data.ok).toBe(true);
+	});
+
 	it("找不到 CLI 时报 cli_not_found 并给出安装提示", async () => {
-		process.env.PI_SMART_SEARCH_BIN = join(workDir, "missing-smart-search");
+		process.env.PI_SMART_SEARCH_BIN = join(workDir(), "missing-smart-search");
 		const error = await expectFailure({ command: ["search"], positionals: ["q"] }, "cli_not_found");
 		expect(error.message).toContain("ENOENT");
 		expect(error.message).toContain("Hint: Install it with `npm i -g @konbakuyomu/smart-search`");
@@ -203,64 +191,133 @@ describe("runSmartSearch", () => {
 });
 
 describe("超时与中止", () => {
-	it("硬超时后杀掉整个进程组（包括继承 stdout 的孙进程）", async () => {
-		const pidFile = join(workDir, "pids");
-		fake("hang", { FAKE_SMART_SEARCH_PIDFILE: pidFile });
-		const error = await expectFailure({ command: ["search"], positionals: ["q"] }, "timeout", { timeoutMs: 500 });
-		expect(error.message).toContain("PI_SMART_SEARCH_TIMEOUT_MS");
-		for (const pid of hangPids(pidFile)) await waitFor(() => !isAlive(pid));
+	// 负载下假 CLI 启动可达 ~450ms：硬超时要留足余量，否则会在 pid 文件写出前就超时
+	const TIMEOUT_MS = 2_000;
+	const HANG_TEST_MS = 15_000;
+	let escapedPid: number | undefined;
+
+	afterEach(() => {
+		if (escapedPid && isAlive(escapedPid)) process.kill(escapedPid, "SIGKILL");
+		escapedPid = undefined;
 	});
 
-	it("PI_SMART_SEARCH_TIMEOUT_MS 覆盖默认硬超时", async () => {
-		process.env.PI_SMART_SEARCH_TIMEOUT_MS = "500";
-		fake("hang", { FAKE_SMART_SEARCH_PIDFILE: join(workDir, "pids") });
-		await expectFailure({ command: ["search"], positionals: ["q"] }, "timeout");
-	});
-
-	it("AbortSignal 触发后报 cancelled，并杀掉进程树", async () => {
-		const pidFile = join(workDir, "pids");
-		fake("hang", { FAKE_SMART_SEARCH_PIDFILE: pidFile });
-		const controller = new AbortController();
-		const pending = expectFailure({ command: ["search"], positionals: ["q"] }, "cancelled", { signal: controller.signal });
-		await waitFor(() => existsSync(pidFile));
-		controller.abort();
-		await pending;
+	async function expectTreeDead(pidFile: string): Promise<void> {
 		for (const pid of hangPids(pidFile)) await waitFor(() => !isAlive(pid));
-	});
+	}
+
+	it(
+		"硬超时后杀掉整个进程组（包括继承 stdout 的孙进程）",
+		async () => {
+			const pidFile = join(workDir(), "pids");
+			fake("hang", { FAKE_SMART_SEARCH_PIDFILE: pidFile });
+			const error = await expectFailure({ command: ["search"], positionals: ["q"] }, "timeout", { timeoutMs: TIMEOUT_MS });
+			expect(error.message).toContain("PI_SMART_SEARCH_TIMEOUT_MS");
+			await expectTreeDead(pidFile);
+		},
+		HANG_TEST_MS,
+	);
+
+	it(
+		"PI_SMART_SEARCH_TIMEOUT_MS 覆盖默认硬超时",
+		async () => {
+			process.env.PI_SMART_SEARCH_TIMEOUT_MS = String(TIMEOUT_MS);
+			fake("hang", { FAKE_SMART_SEARCH_PIDFILE: join(workDir(), "pids") });
+			await expectFailure({ command: ["search"], positionals: ["q"] }, "timeout");
+		},
+		HANG_TEST_MS,
+	);
+
+	it(
+		"AbortSignal 触发后报 cancelled，并杀掉进程树",
+		async () => {
+			const pidFile = join(workDir(), "pids");
+			fake("hang", { FAKE_SMART_SEARCH_PIDFILE: pidFile });
+			const controller = new AbortController();
+			const pending = expectFailure({ command: ["search"], positionals: ["q"] }, "cancelled", { signal: controller.signal });
+			await waitFor(() => existsSync(pidFile));
+			controller.abort();
+			await pending;
+			await expectTreeDead(pidFile);
+		},
+		HANG_TEST_MS,
+	);
 
 	it("调用前已中止时直接报 cancelled，不启动 CLI", async () => {
-		const pidFile = join(workDir, "pids");
+		const pidFile = join(workDir(), "pids");
 		fake("hang", { FAKE_SMART_SEARCH_PIDFILE: pidFile });
 		await expectFailure({ command: ["search"], positionals: ["q"] }, "cancelled", { signal: AbortSignal.abort() });
 		expect(existsSync(pidFile)).toBe(false);
 	});
 
-	it("进程忽略 SIGTERM 时，宽限期后升级为 SIGKILL", async () => {
-		const pidFile = join(workDir, "pids");
-		fake("hang", { FAKE_SMART_SEARCH_PIDFILE: pidFile, FAKE_SMART_SEARCH_IGNORE_TERM: "1" });
-		const started = Date.now();
-		await expectFailure({ command: ["search"], positionals: ["q"] }, "timeout", { timeoutMs: 500, killGraceMs: 300 });
-		expect(Date.now() - started).toBeGreaterThanOrEqual(800);
-		for (const pid of hangPids(pidFile)) await waitFor(() => !isAlive(pid));
-	});
+	it(
+		"进程忽略 SIGTERM 时，宽限期后用 SIGKILL 杀掉（在兜底返回之前就结束）",
+		async () => {
+			const pidFile = join(workDir(), "pids");
+			fake("hang", { FAKE_SMART_SEARCH_PIDFILE: pidFile, FAKE_SMART_SEARCH_IGNORE_TERM: "1" });
+			const controller = new AbortController();
+			const started = Date.now();
+			const pending = expectFailure({ command: ["search"], positionals: ["q"] }, "cancelled", {
+				signal: controller.signal,
+				killGraceMs: 300,
+			});
+			await waitFor(() => existsSync(pidFile));
+			const [fakePid] = hangPids(pidFile);
+			const abortedAt = Date.now();
+			controller.abort();
+			// 没有 SIGKILL 的话，忽略 SIGTERM 的假 CLI 会一直活着
+			await waitFor(() => !isAlive(fakePid), 3_000);
+			expect(Date.now() - abortedAt).toBeGreaterThanOrEqual(300);
+			await pending;
+			expect(Date.now() - started).toBeLessThan(HANG_TEST_MS);
+		},
+		HANG_TEST_MS,
+	);
 
-	it("孙进程逃出进程组、一直占着管道时，也会在宽限期后按时返回", async () => {
-		const pidFile = join(workDir, "pids");
-		fake("hang", { FAKE_SMART_SEARCH_PIDFILE: pidFile, FAKE_SMART_SEARCH_ESCAPE: "1" });
-		const started = Date.now();
-		try {
-			await expectFailure({ command: ["search"], positionals: ["q"] }, "timeout", { timeoutMs: 300, killGraceMs: 200 });
-			expect(Date.now() - started).toBeLessThan(5_000);
-		} finally {
-			const [, escaped] = hangPids(pidFile);
-			process.kill(escaped, "SIGKILL");
-		}
-	});
+	it(
+		"孙进程逃出进程组、一直占着管道时，也会在宽限期后按时返回",
+		async () => {
+			const pidFile = join(workDir(), "pids");
+			fake("hang", { FAKE_SMART_SEARCH_PIDFILE: pidFile, FAKE_SMART_SEARCH_ESCAPE: "1" });
+			const controller = new AbortController();
+			const pending = expectFailure({ command: ["search"], positionals: ["q"] }, "cancelled", {
+				signal: controller.signal,
+				killGraceMs: 200,
+			});
+			await waitFor(() => existsSync(pidFile));
+			escapedPid = hangPids(pidFile)[1];
+			const abortedAt = Date.now();
+			controller.abort();
+			await pending;
+			// 兜底在宽限期 + 1s 后触发
+			expect(Date.now() - abortedAt).toBeLessThan(200 + 1_000 + 2_000);
+		},
+		HANG_TEST_MS,
+	);
+
+	it(
+		"宿主进程退出时清掉仍在运行的 CLI 进程组",
+		async () => {
+			const pidFile = join(workDir(), "pids");
+			const runner = join(import.meta.dirname, "..", "src", "runner.ts");
+			// 在独立的 node 进程里发起调用，等 CLI 起来后直接 process.exit，模拟 pi 退出
+			const script = `
+				import { existsSync } from "node:fs";
+				import { runSmartSearch } from ${JSON.stringify(runner)};
+				runSmartSearch({ command: ["search"], positionals: ["q"] }).catch(() => {});
+				const timer = setInterval(() => { if (existsSync(${JSON.stringify(pidFile)})) { clearInterval(timer); process.exit(0); } }, 20);
+			`;
+			fake("hang", { FAKE_SMART_SEARCH_PIDFILE: pidFile });
+			const host = spawnSync(process.execPath, ["--input-type=module", "--no-warnings", "-e", script], { env: process.env, timeout: 10_000 });
+			expect(host.status).toBe(0);
+			await expectTreeDead(pidFile);
+		},
+		HANG_TEST_MS,
+	);
 });
 
 describe("resolveCli", () => {
 	function makeWindowsPrefix(): string {
-		const prefix = join(workDir, "npm");
+		const prefix = join(workDir(), "npm");
 		const script = join(prefix, "node_modules", "@konbakuyomu", "smart-search", "npm", "bin", "smart-search.js");
 		mkdirSync(dirname(script), { recursive: true });
 		writeFileSync(script, "");
@@ -289,12 +346,23 @@ describe("resolveCli", () => {
 		expect(prefixArgs[0]).toContain(prefix);
 	});
 
-	it("Windows 指定 .exe 或找不到包装脚本时直接执行", () => {
+	it("Windows 指定 .exe 绝对路径时直接执行", () => {
 		expect(resolveCli({ PI_SMART_SEARCH_BIN: "C:/bin/smart-search.exe" }, "win32")).toEqual({
 			file: "C:/bin/smart-search.exe",
 			prefixArgs: [],
 		});
-		expect(resolveCli({ PATH: workDir }, "win32")).toEqual({ file: "smart-search", prefixArgs: [] });
+	});
+
+	it("Windows 只接受 PATH 里的绝对路径，不回落到裸名（否则会先执行当前目录下的同名 exe）", () => {
+		const bin = join(workDir(), "bin");
+		mkdirSync(bin);
+		writeFileSync(join(bin, "smart-search.exe"), "");
+		expect(resolveCli({ PATH: ["relative-dir", bin].join(delimiter) }, "win32")).toEqual({
+			file: join(bin, "smart-search.exe"),
+			prefixArgs: [],
+		});
+		expect(() => resolveCli({ PATH: workDir() }, "win32")).toThrow(/cli_not_found/);
+		expect(() => resolveCli({ PATH: "." }, "win32")).toThrow(/cli_not_found/);
 	});
 });
 
@@ -313,7 +381,7 @@ describe("checkCliVersion", () => {
 	});
 
 	it("没装 CLI 时返回 missing", async () => {
-		process.env.PI_SMART_SEARCH_BIN = join(workDir, "missing-smart-search");
+		process.env.PI_SMART_SEARCH_BIN = join(workDir(), "missing-smart-search");
 		expect((await checkCliVersion()).state).toBe("missing");
 	});
 });
@@ -325,7 +393,7 @@ describe.runIf(process.env.PI_SMART_SEARCH_IT === "1")("真实 smart-search CLI"
 	});
 
 	it("可选位置参数里的 --output=... 不会被当成选项去写文件", async () => {
-		const target = join(workDir, "injected.txt");
+		const target = join(workDir(), "injected.txt");
 		await runSmartSearch({ command: ["context7-library"], positionals: ["react", `--output=${target}`] }).catch(() => undefined);
 		expect(existsSync(target)).toBe(false);
 	});

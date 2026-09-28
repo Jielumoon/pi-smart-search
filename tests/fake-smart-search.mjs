@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 // 测试用假 smart-search CLI，行为由 FAKE_SMART_SEARCH_MODE 控制
 import { spawn } from "node:child_process";
-import { writeFileSync } from "node:fs";
+import { renameSync, writeFileSync } from "node:fs";
 
 const env = process.env;
 const args = process.argv.slice(2);
+// 记录收到的 argv，用来断言工具参数到 CLI 参数的映射
+if (env.FAKE_SMART_SEARCH_ARGV_FILE) writeFileSync(env.FAKE_SMART_SEARCH_ARGV_FILE, JSON.stringify(args));
 
 switch (env.FAKE_SMART_SEARCH_MODE ?? "echo") {
 	case "echo":
@@ -27,7 +29,9 @@ switch (env.FAKE_SMART_SEARCH_MODE ?? "echo") {
 			detached: Boolean(env.FAKE_SMART_SEARCH_ESCAPE),
 		});
 		if (env.FAKE_SMART_SEARCH_IGNORE_TERM) process.on("SIGTERM", () => {});
-		writeFileSync(env.FAKE_SMART_SEARCH_PIDFILE, `${process.pid} ${grandchild.pid}`);
+		// 先写临时文件再改名：测试一看到文件就读，不能读到写了一半的内容
+		writeFileSync(`${env.FAKE_SMART_SEARCH_PIDFILE}.tmp`, `${process.pid} ${grandchild.pid}`);
+		renameSync(`${env.FAKE_SMART_SEARCH_PIDFILE}.tmp`, env.FAKE_SMART_SEARCH_PIDFILE);
 		setInterval(() => {}, 1000);
 		break;
 	}

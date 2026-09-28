@@ -43,16 +43,16 @@ export function isPrivateHost(hostname: string): boolean {
 	const host = hostname.toLowerCase().replace(/^\[|\]$/g, "").replace(/\.$/, "");
 	if (host === "localhost" || host.endsWith(".localhost")) return true;
 	const family = isIP(host);
-	if (family === 4) return isPrivateIPv4(host);
-	if (family === 6) return isPrivateIPv6(host);
+	if (family === 4) return isPrivateIPv4(host.split(".").map(Number));
+	if (family === 6) return isPrivateIPv6(ipv6Groups(host));
 	return false;
 }
 
-function isPrivateIPv4(ip: string): boolean {
-	const [a, b] = ip.split(".").map(Number);
+function isPrivateIPv4([a, b]: number[]): boolean {
 	return (
 		a === 0 ||
 		a === 10 ||
+		(a === 100 && b >= 64 && b <= 127) || // CGNAT，Tailscale 等也用这一段
 		a === 127 ||
 		(a === 169 && b === 254) ||
 		(a === 172 && b >= 16 && b <= 31) ||
@@ -60,15 +60,50 @@ function isPrivateIPv4(ip: string): boolean {
 	);
 }
 
-function isPrivateIPv6(ip: string): boolean {
-	// IPv4 映射地址会被 URL 规范成 ::ffff:7f00:1 这种十六进制形式
-	const mapped = /^::ffff:([0-9a-f]{1,4}):([0-9a-f]{1,4})$/.exec(ip);
-	if (mapped) {
-		const high = parseInt(mapped[1], 16);
-		const low = parseInt(mapped[2], 16);
-		return isPrivateIPv4(`${high >> 8}.${high & 255}.${low >> 8}.${low & 255}`);
+// 展开成 8 个 16 位分组；URL 规范化后的 IPv6 不含点分部分，这里顺带兼容 isIP 接受的 ::a.b.c.d 写法
+function ipv6Groups(ip: string): number[] {
+	const dotted = /(\d+\.\d+\.\d+\.\d+)$/.exec(ip);
+	let text = ip;
+	if (dotted) {
+		const [a, b, c, d] = dotted[1].split(".").map(Number);
+		text = `${ip.slice(0, dotted.index)}${((a << 8) | b).toString(16)}:${((c << 8) | d).toString(16)}`;
 	}
-	if (ip === "::" || ip === "::1") return true;
-	const first = parseInt(ip.split(":")[0] || "0", 16);
-	return (first & 0xfe00) === 0xfc00 || (first & 0xffc0) === 0xfe80;
+	const [head, tail] = text.split("::");
+	const left = head ? head.split(":") : [];
+	const right = tail ? tail.split(":") : [];
+	const fill = tail === undefined ? [] : Array(8 - left.length - right.length).fill("0");
+	return [...left, ...fill, ...right].map((group) => parseInt(group, 16));
+}
+
+function isPrivateIPv6(g: number[]): boolean {
+	const zeros = (from: number, to: number) => g.slice(from, to).every((group) => group === 0);
+	// 内嵌 IPv4 的几种写法：映射 ::ffff:0:0/96、转换 ::ffff:0:0:0/96、兼容 ::/96、NAT64 64:ff9b::/96
+	const embedsIPv4 =
+		(zeros(0, 5) && g[5] === 0xffff) ||
+		(zeros(0, 4) && g[4] === 0xffff && g[5] === 0) ||
+		(zeros(0, 6) && !(g[6] === 0 && g[7] <= 1)) ||
+		(g[0] === 0x64 && g[1] === 0xff9b && zeros(2, 6));
+	if (embedsIPv4) return isPrivateIPv4([g[6] >> 8, g[6] & 255]);
+	if (zeros(0, 7) && g[7] <= 1) return true; // :: 与 ::1
+	return (g[0] & 0xfe00) === 0xfc00 || (g[0] & 0xffc0) === 0xfe80;
+}
+
+// 上游会从 search/research 的 query 里提取 URL 再去抓取（intent_router.py 的 extract_urls），用同一条规则检查
+const QUERY_URL = /https?:\/\/[^\s<>\])"'，。；！？、：）】》」』]+/g;
+
+export function assertNoPrivateUrls(text: string, label: string): string {
+	for (const [match] of text.matchAll(QUERY_URL)) {
+		let host: string;
+		try {
+			host = new URL(match.replace(/[.,;，。；)]+$/, "")).hostname;
+		} catch {
+			continue;
+		}
+		if (isPrivateHost(host)) {
+			throw invalid(
+				`${label} contains a local or private network URL (${host}). Smart Search would try to fetch it through third-party providers, which cannot reach it; remove the URL from ${label}.`,
+			);
+		}
+	}
+	return text;
 }

@@ -1,7 +1,7 @@
 // smart-search CLI 调用层：拼参数、spawn、杀进程树、解析 JSON、错误契约
-import { spawn, type ChildProcess } from "node:child_process";
+import { spawn, spawnSync, type ChildProcess } from "node:child_process";
 import { existsSync } from "node:fs";
-import { basename, delimiter, dirname, join } from "node:path";
+import { basename, delimiter, dirname, isAbsolute, join, win32 } from "node:path";
 
 export const DEFAULT_TIMEOUT_MS = 600_000;
 export const MAX_OUTPUT_BYTES = 16 * 1024 * 1024;
@@ -33,14 +33,17 @@ export class SmartSearchError extends Error {
 	readonly type: string;
 	readonly hint?: string;
 	readonly attempts?: string;
+	/** CLI 返回了 ok:false 的 JSON 时附带原始结果（doctor 这类诊断命令需要它） */
+	readonly data?: Record<string, unknown>;
 
-	constructor(type: string, message: string, attempts?: string) {
+	constructor(type: string, message: string, attempts?: string, data?: Record<string, unknown>) {
 		const hint = HINTS[type];
 		super([`[${type}] ${message}`, hint && `Hint: ${hint}`, attempts && `Attempts: ${attempts}`].filter(Boolean).join("\n"));
 		this.name = "SmartSearchError";
 		this.type = type;
 		this.hint = hint;
 		this.attempts = attempts;
+		this.data = data;
 	}
 }
 
@@ -113,27 +116,59 @@ export interface CliCommand {
 	prefixArgs: string[];
 }
 
+// Windows 上不带路径的名字会先在当前目录里找（libuv），恶意仓库放一个同名 exe 就会被执行，所以只在 PATH 的绝对路径里找
+function pathDirs(env: NodeJS.ProcessEnv): string[] {
+	return (env.PATH ?? env.Path ?? "").split(delimiter).filter((dir) => isAbsolute(dir));
+}
+
+function findInPath(name: string, env: NodeJS.ProcessEnv): string | undefined {
+	for (const dir of pathDirs(env)) {
+		const file = join(dir, name);
+		if (existsSync(file)) return file;
+	}
+	return undefined;
+}
+
 // pi 可能以 Bun 编译的单文件二进制运行，这时 process.execPath 是 pi 本身，不能拿来跑 .js
-function scriptRuntime(): string {
-	return /^(node|bun)(\.exe)?$/i.test(basename(process.execPath)) ? process.execPath : "node";
+function scriptRuntime(env: NodeJS.ProcessEnv, platform: NodeJS.Platform): string {
+	if (/^(node|bun)(\.exe)?$/i.test(basename(process.execPath))) return process.execPath;
+	if (platform !== "win32") return "node";
+	const node = findInPath("node.exe", env);
+	if (!node) throw new SmartSearchError("cli_not_found", "node.exe was not found in PATH; it is needed to run the Smart Search npm wrapper.");
+	return node;
 }
 
 export function resolveCli(env: NodeJS.ProcessEnv = process.env, platform: NodeJS.Platform = process.platform): CliCommand {
 	const bin = env.PI_SMART_SEARCH_BIN?.trim() || "smart-search";
-	if (/\.[cm]?js$/i.test(bin)) return { file: scriptRuntime(), prefixArgs: [bin] };
-	if (platform !== "win32" || /\.exe$/i.test(bin)) return { file: bin, prefixArgs: [] };
+	if (/\.[cm]?js$/i.test(bin)) return { file: scriptRuntime(env, platform), prefixArgs: [bin] };
+	if (platform !== "win32") return { file: bin, prefixArgs: [] };
+	const hasDir = /[\\/]/.test(bin);
+	if (hasDir && /\.exe$/i.test(bin)) return { file: bin, prefixArgs: [] };
 	// Windows：npm 全局装的是 .cmd 包装，spawn 它需要 shell 和引号转义；改用 node 直接跑包装脚本
-	const dirs = /[\\/]/.test(bin) ? [dirname(bin)] : (env.PATH ?? env.Path ?? "").split(delimiter).filter(Boolean);
-	for (const dir of dirs) {
+	for (const dir of hasDir ? [dirname(bin)] : pathDirs(env)) {
 		const script = join(dir, WRAPPER_SCRIPT);
-		if (existsSync(script)) return { file: scriptRuntime(), prefixArgs: [script] };
+		if (existsSync(script)) return { file: scriptRuntime(env, platform), prefixArgs: [script] };
+		const exe = join(dir, /\.exe$/i.test(bin) ? bin : `${bin}.exe`);
+		if (!hasDir && existsSync(exe)) return { file: exe, prefixArgs: [] };
 	}
-	return { file: bin, prefixArgs: [] };
+	throw new SmartSearchError("cli_not_found", `Could not find ${bin} (npm wrapper script or .exe) in PATH.`);
 }
+
+// setTimeout 超过 2^31-1 会溢出成 1ms，导致每次调用立刻超时
+const MAX_TIMER_MS = 2_147_483_647;
 
 function timeoutFromEnv(): number {
 	const value = Number(process.env.PI_SMART_SEARCH_TIMEOUT_MS);
-	return Number.isInteger(value) && value > 0 ? value : DEFAULT_TIMEOUT_MS;
+	return Number.isInteger(value) && value > 0 && value <= MAX_TIMER_MS ? value : DEFAULT_TIMEOUT_MS;
+}
+
+function taskkill(pid: number): string[] {
+	return ["/pid", String(pid), "/t", "/f"];
+}
+
+// 与 pi 自己的做法一致（shell.js）：用 System32 下的绝对路径，不依赖 PATH 和当前目录
+function taskkillPath(): string {
+	return win32.join(process.env.SystemRoot ?? "C:\\Windows", "System32", "taskkill.exe");
 }
 
 // POSIX 下子进程是进程组组长（detached），信号发给整个组；npm 包装脚本转发不了 SIGKILL，只杀包装会留下孤儿
@@ -141,7 +176,7 @@ function killTree(child: ChildProcess, graceMs: number): void {
 	const pid = child.pid;
 	if (!pid) return;
 	if (process.platform === "win32") {
-		spawn("taskkill", ["/pid", String(pid), "/t", "/f"], { stdio: "ignore", windowsHide: true }).once("error", () => child.kill());
+		spawn(taskkillPath(), taskkill(pid), { stdio: "ignore", windowsHide: true }).once("error", () => child.kill());
 		return;
 	}
 	const signalGroup = (signal: NodeJS.Signals) => {
@@ -153,6 +188,27 @@ function killTree(child: ChildProcess, graceMs: number): void {
 	};
 	signalGroup("SIGTERM");
 	setTimeout(() => signalGroup("SIGKILL"), graceMs).unref();
+}
+
+// detached 的子进程收不到终端发给前台进程组的信号，pi 退出时要主动清掉，否则 CLI 会继续跑、继续消耗 API。
+// 只能覆盖会触发 exit 事件的退出（正常退出、process.exit、未捕获异常）；被 SIGINT/SIGKILL 直接终止时无能为力
+const activeChildren = new Set<number>();
+let exitHookInstalled = false;
+
+function trackChild(pid: number): void {
+	activeChildren.add(pid);
+	if (exitHookInstalled) return;
+	exitHookInstalled = true;
+	process.once("exit", () => {
+		for (const active of activeChildren) {
+			try {
+				if (process.platform === "win32") spawnSync(taskkillPath(), taskkill(active), { stdio: "ignore", windowsHide: true });
+				else process.kill(-active, "SIGKILL");
+			} catch {
+				// 已经退出
+			}
+		}
+	});
 }
 
 interface RawOutput {
@@ -180,6 +236,7 @@ function spawnCli(args: string[], options: RunOptions): Promise<RawOutput> {
 			detached: process.platform !== "win32",
 			windowsHide: true,
 		});
+		if (child.pid) trackChild(child.pid);
 		const chunks: Buffer[] = [];
 		let outputBytes = 0;
 		let stderr = "";
@@ -213,6 +270,7 @@ function spawnCli(args: string[], options: RunOptions): Promise<RawOutput> {
 			settled = true;
 			clearTimeout(timer);
 			signal?.removeEventListener("abort", onAbort);
+			if (child.pid) activeChildren.delete(child.pid);
 			settle();
 		};
 		signal?.addEventListener("abort", onAbort, { once: true });
@@ -278,7 +336,7 @@ export function parseResult(stdout: string, stderr: string, exitCode: number | n
 	if (data.ok) return data;
 	const type = text(data.error_type) || (exitCode !== null && EXIT_CODE_TYPES[exitCode]) || "unknown_error";
 	const message = text(data.error) || `Smart Search reported ok:false (exit code ${exitCode}).`;
-	throw new SmartSearchError(type, message, summarizeAttempts(data.provider_attempts));
+	throw new SmartSearchError(type, message, summarizeAttempts(data.provider_attempts), data);
 }
 
 export async function runSmartSearch(call: CliCall, options: RunOptions = {}): Promise<RunResult> {
