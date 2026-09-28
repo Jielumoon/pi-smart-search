@@ -1,0 +1,24 @@
+{
+  "ok": true,
+  "url": "https://github.com/earendil-works/pi",
+  "results": [
+    {
+      "id": "https://github.com/earendil-works/pi/blob/64b51efb6ef6f1e42676e866da906a5f900e592d/README.md",
+      "title": "README.md",
+      "url": "https://github.com/earendil-works/pi/blob/64b51efb6ef6f1e42676e866da906a5f900e592d/README.md",
+      "publishedDate": null,
+      "author": "",
+      "score": 0.9530268907546997
+    },
+    {
+      "id": "https://github.com/krzyzanowskim/pi",
+      "title": "krzyzanowskim/pi",
+      "url": "https://github.com/krzyzanowskim/pi",
+      "publishedDate": null,
+      "author": "",
+      "score": 0.9432649612426758
+    }
+  ],
+  "total": 2,
+  "elapsed_ms": 1253.98
+}

@@ -1,0 +1,97 @@
+{
+  "ok": true,
+  "mode": "deep_research",
+  "query_mode": "deep",
+  "question": "pi 扩展如何做工具进度回调",
+  "trigger_source": "explicit_cli",
+  "difficulty": "standard",
+  "intent_signals": {
+    "recency_requirement": "none",
+    "docs_api_intent": false,
+    "locale_domain_scope": "global",
+    "known_url": false,
+    "source_authority_need": "normal",
+    "claim_risk": "medium",
+    "cross_validation_need": "normal",
+    "breadth_depth_budget": "quick"
+  },
+  "decomposition": [
+    {
+      "id": "sq1",
+      "question": "pi 扩展如何做工具进度回调 的整体问题轮廓和候选来源是什么？",
+      "reason": "先做 broad discovery，避免一开始把问题拆错。",
+      "required_capabilities": [
+        "broad_discovery"
+      ]
+    }
+  ],
+  "capability_plan": [
+    {
+      "capability": "broad_discovery",
+      "tools": [
+        "search"
+      ],
+      "reason": "Find the initial answer shape and candidate sources."
+    },
+    {
+      "capability": "page_evidence",
+      "tools": [
+        "fetch"
+      ],
+      "reason": "Fetch key URLs before claim-level conclusions."
+    }
+  ],
+  "evidence_policy": "fetch_before_claim",
+  "preflight": {
+    "tool": "doctor",
+    "command": "smart-search doctor --format json",
+    "when": "configuration or provider availability is uncertain",
+    "executed_by_deep_command": false
+  },
+  "steps": [
+    {
+      "id": "s1",
+      "subquestion_id": "sq1",
+      "tool": "search",
+      "purpose": "broad discovery and routing metadata",
+      "command": "smart-search search \"pi 扩展如何做工具进度回调\" --validation balanced --extra-sources 1 --format json --output \"/tmp/smart-search-evidence/20260927-2356-pi-扩展如何做工具进度回调/01-search.json\"",
+      "output_path": "/tmp/smart-search-evidence/20260927-2356-pi-扩展如何做工具进度回调/01-search.json"
+    },
+    {
+      "id": "s2",
+      "subquestion_id": "sq1",
+      "tool": "fetch",
+      "purpose": "fetch key URLs before final claims",
+      "command": "smart-search fetch \"<key-url>\" --format markdown --output \"/tmp/smart-search-evidence/20260927-2356-pi-扩展如何做工具进度回调/02-fetch.md\"",
+      "output_path": "/tmp/smart-search-evidence/20260927-2356-pi-扩展如何做工具进度回调/02-fetch.md"
+    }
+  ],
+  "gap_check": {
+    "required": true,
+    "rule": "fetch missing evidence for key claims or downgrade unsupported claims to unverified candidates",
+    "unsupported_claim_action": "downgrade_to_unverified_candidate"
+  },
+  "final_answer_policy": "cite fetched evidence, list unverified candidates, and include key commands",
+  "usage_boundary": {
+    "search": "smart-search search runs live fast/broad search immediately.",
+    "deep": "smart-search deep is an offline planner; it does not execute provider calls or fetch pages.",
+    "execution": "An AI agent or user executes the listed steps with existing CLI commands, then performs gap_check."
+  },
+  "allowed_tools": [
+    "context7-docs",
+    "context7-library",
+    "exa-search",
+    "exa-similar",
+    "fetch",
+    "map",
+    "search",
+    "zhipu-mcp-read-file",
+    "zhipu-mcp-reader",
+    "zhipu-mcp-repo-structure",
+    "zhipu-mcp-search",
+    "zhipu-mcp-search-doc",
+    "zhipu-search"
+  ],
+  "evidence_dir": "/tmp/smart-search-evidence/20260927-2356-pi-扩展如何做工具进度回调",
+  "elapsed_ms": 1.88
+}

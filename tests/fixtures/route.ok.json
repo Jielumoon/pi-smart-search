@@ -1,0 +1,44 @@
+{
+  "docs_intent": true,
+  "zh_current_intent": false,
+  "web_current_intent": false,
+  "fetch_intent": false,
+  "supplemental_paths": [
+    "docs_search"
+  ],
+  "intent_router_mode": "rules",
+  "required_capabilities": [
+    "docs_search"
+  ],
+  "intent_signals": {
+    "docs_api_intent": true,
+    "current_or_locale_intent": false,
+    "known_url": false,
+    "vertical_intent": false,
+    "strict_validation": false,
+    "rule_scores": {
+      "docs_search": 0.82
+    },
+    "urls": []
+  },
+  "confidence": 0.82,
+  "router_engines_used": [
+    "rules"
+  ],
+  "degraded": false,
+  "degraded_reason": "",
+  "reasons": [
+    "rules matched docs/API/library terms"
+  ],
+  "ok": true,
+  "query": "react useEffect cleanup 官方文档",
+  "validation_level": "balanced",
+  "executed_search": false,
+  "provider_selection": "not_executed",
+  "embedding_model": "",
+  "embedding_threshold": 0.74,
+  "embedding_margin": 0.05,
+  "embedding_threshold_source": "default",
+  "embedding_margin_source": "default",
+  "elapsed_ms": 0.23
+}

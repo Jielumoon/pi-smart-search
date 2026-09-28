@@ -1,0 +1,50 @@
+{
+  "ok": true,
+  "enabled": true,
+  "cooldown_seconds": 900.0,
+  "failure_threshold": 2,
+  "store_path": "/home/user/.config/smart-search/provider_health.json",
+  "providers": [
+    {
+      "provider": "exa",
+      "state": "closed",
+      "consecutive_failures": 0,
+      "error_type": "",
+      "error": "",
+      "cooldown_remaining_seconds": 0.0,
+      "hard_failure": false,
+      "configured": true
+    },
+    {
+      "provider": "firecrawl",
+      "state": "closed",
+      "consecutive_failures": 0,
+      "error_type": "",
+      "error": "",
+      "cooldown_remaining_seconds": 0.0,
+      "hard_failure": false,
+      "configured": true
+    },
+    {
+      "provider": "tavily",
+      "state": "closed",
+      "consecutive_failures": 0,
+      "error_type": "",
+      "error": "",
+      "cooldown_remaining_seconds": 0.0,
+      "hard_failure": false,
+      "configured": true
+    },
+    {
+      "provider": "xai-responses",
+      "state": "closed",
+      "consecutive_failures": 0,
+      "error_type": "",
+      "error": "",
+      "cooldown_remaining_seconds": 0.0,
+      "hard_failure": false,
+      "configured": true
+    }
+  ],
+  "cooldown_providers": []
+}

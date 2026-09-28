@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "base_url": "https://pi.dev/docs/latest",
+  "results": [
+    "https://pi.dev/docs/latest",
+    "https://pi.dev/docs/latest/windows",
+    "https://pi.dev/docs/latest/custom-provider",
+    "https://pi.dev/docs/latest/settings",
+    "https://pi.dev/docs/latest/llama-cpp",
+    "https://pi.dev/docs/latest/containerization",
+    "https://pi.dev/docs/latest/themes",
+    "https://pi.dev/docs/latest/models",
+    "https://pi.dev/models",
+    "https://pi.dev/docs/latest/shell-aliases"
+  ],
+  "response_time": 0.1,
+  "url": "https://pi.dev/docs/latest",
+  "elapsed_ms": 2474.27
+}

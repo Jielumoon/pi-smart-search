@@ -1,0 +1,42 @@
+{
+  "ok": true,
+  "query": "pi coding agent extension registerTool",
+  "search_type": "neural",
+  "results": [
+    {
+      "id": "https://github.com/earendil-works/pi-mono/blob/main/packages/coding-agent/docs/extensions.md",
+      "title": "packages/coding-agent/docs/extensions.md",
+      "url": "https://github.com/earendil-works/pi-mono/blob/main/packages/coding-agent/docs/extensions.md",
+      "publishedDate": null,
+      "author": "",
+      "score": 1,
+      "highlights": [
+        "Extensions are TypeScript modules that extend pi's behavior. They can subscribe to lifecycle events, register custom tools callable by the LLM, add commands, and more.\n...\n- **Custom tools** - Register tools the LLM can call via `pi.registerTool()`\n- **Event interception** - Block or modify tool calls, inject context, customize compaction\n- **User interaction** - Prompt users via `ctx.ui` (select, confirm, input, notify)\n- **Custom UI components** - Full TUI components with keyboard input via `ctx.ui.custom()` for complex interactions\n- **Custom commands** - Register commands like `/mycommand` via `pi.registerCommand()`\n- **Session persistence** - Store state that survives restarts via `pi.appendEntry()`\n- **Custom rendering** - Control how tool calls/results and messages appear in TUI\n...\nexport default function (pi: ExtensionAPI) {\n  // React to events\n  pi.on(\"session_start\", async (_\n...\n.notify(\"Extension ... !\", \"info\");\n  });\n\n  pi.on(\"tool_call\", async (event, ctx) => {\n    if (event.toolName === \"bash\" && event.input.command?.includes(\"rm -rf\")) {\n      const ok = await ctx.ui.confirm(\"Dangerous!\", \"Allow rm -rf?\");\n      if (!ok) return { block: true, reason: \"Blocked by user\" };\n    }\n  });\n\n  // Register a custom tool\n  pi.registerTool({\n    name: \"greet\",\n    label: \"Greet\",\n    description: \"Greet someone by name\",\n    parameters: Type.Object({\n      name: Type.String({ description: \"Name to greet\" }),\n    }),\n    async execute(toolCallId, params, signal, onUpdate, ctx) {\n      return {\n        content: [{ type: \"text\", text: `Hello, ${params.name}!` }],\n        details: {},\n      };\n    },\n  });\n\n  // Register a command\n  pi.registerCommand(\"hello\", {\n    description: \"Say hello\",\n    handler: async (args, ctx) => {\n      ctx.ui.notify(`Hello ${args || \"world\"}!`, \"info\");\n    },\n  });\n}\n...\n// Subscribe to events\n  pi. ... (\"event_name\", async (event, ctx) =>\n...\n// ctx\n...\nawait ctx.ui ... Are you sure?\");\n    ctx. ... !\", \"info\");\n    ctx.ui ... se…[fixture 截断，原长 4006]"
+      ]
+    },
+    {
+      "id": "https://cdn.jsdelivr.net/npm/@hugolsramos01-bit/pi-coding-agent@0.80.7-agentic.1/docs/extensions.md",
+      "title": "Extensions",
+      "url": "https://cdn.jsdelivr.net/npm/@hugolsramos01-bit/pi-coding-agent@0.80.7-agentic.1/docs/extensions.md",
+      "publishedDate": null,
+      "author": "",
+      "score": 0.5,
+      "highlights": [
+        "Extensions are TypeScript modules that extend pi's behavior. They can subscribe to lifecycle events, register custom tools callable by the LLM, add commands, and more.\n...\n- Custom tools - Register tools the LLM can call via `pi.registerTool()`\n- Event interception - Block or modify tool calls, inject context, customize compaction\n- User interaction - Prompt users via `ctx.ui` (select, confirm, input, notify)\n- Custom UI components - Full TUI components with keyboard input via `ctx.ui.custom()` for complex interactions\n- Custom commands - Register commands like `/mycommand` via `pi.registerCommand()`\n- Session persistence - Store state that survives restarts via `pi.appendEntry()`\n- Custom rendering - Control how tool calls/results and messages appear in TUI\n...\nexport default function (pi: ExtensionAPI) {\n  // React to events\n  pi. ... \", async (_event, ctx\n...\n.notify(\"Extension ... !\", \"info\n...\n});\n\n  pi.on(\"tool_call\", async (event, ctx) => {\n    if (event.toolName === \"bash\" && event.input.command?.includes(\"rm -rf\")) {\n      const ok = await ctx.ui.confirm(\"Dangerous!\", \"Allow rm -rf?\");\n      if (!ok) return { block: true, reason: \"Blocked by user\" };\n    }\n  });\n\n  // Register a custom tool\n  pi.registerTool({\n    name: \"greet\",\n    label: \"Greet\",\n    description: \"Greet someone by name\",\n    parameters: Type.Object({\n      name: Type.String({ description: \"Name to greet\" }),\n    }),\n    async execute(toolCallId, params, signal, onUpdate, ctx) {\n      return {\n        content: [{ type: \"text\", text: `Hello, ${params.name}!` }],\n        details: {},\n      };\n    },\n  });\n\n  // Register a command\n  pi.registerCommand(\"hello\", {\n    description: \"Say hello\",\n    handler: async (args, ctx) => {\n      ctx.ui.notify(`Hello ${args || \"world\"}!`, \"info\");\n    },\n  });\n}\n...\nSubscribe to events\n  pi.on(\"event_name\", async (event, ctx) =>\n...\n// ctx\n...\nconst ok ... await ctx.ui ... confirm(\"Title ... \"Are you sure?\");\n    ctx.ui.notify ... Done!\", \"info\");\n    ctx.…[fixture 截断，原长 3926]"
+      ]
+    },
+    {
+      "id": "https://cdn.jsdelivr.net/npm/@vandeepunk/pi-coding-agent@0.0.6/docs/extensions.md",
+      "title": "extensions.md",
+      "url": "https://cdn.jsdelivr.net/npm/@vandeepunk/pi-coding-agent@0.0.6/docs/extensions.md",
+      "publishedDate": null,
+      "author": "",
+      "score": 0,
+      "highlights": [
+        "Extensions are TypeScript modules that extend pi's behavior. They can subscribe to lifecycle events, register custom tools callable by the LLM, add commands, and more.\n...\n- **Custom tools** - Register tools the LLM can call via `pi.registerTool()`\n- **Event interception** - Block or modify tool calls, inject context, customize compaction\n- **User interaction** - Prompt users via `ctx.ui` (select, confirm, input, notify)\n- **Custom UI components** - Full TUI components with keyboard input via `ctx.ui.custom()` for complex interactions\n- **Custom commands** - Register commands like `/mycommand` via `pi.registerCommand()`\n- **Session persistence** - Store state that survives restarts via `pi.appendEntry()`\n- **Custom rendering** - Control how tool calls/results and messages appear in TUI\n...\nexport default function (pi: ExtensionAPI) {\n  // React to events\n  pi.on(\"session_start\", async (_event, ctx) => {\n    ctx.ui.notify(\"Extension loaded!\", \"info\");\n  });\n\n  pi.on(\"tool_call\", async (event, ctx) => {\n    if (event.toolName === \"bash\" && event.input.command?.includes(\"rm -rf\")) {\n      const ok = await ctx.ui.confirm(\"Dangerous!\", \"Allow rm -rf?\");\n      if (!ok) return { block: true, reason: \"Blocked by user\" };\n    }\n  });\n\n  // Register a custom tool\n  pi.registerTool({\n    name: \"greet\",\n    label: \"Greet\",\n    description: \"Greet someone by name\",\n    parameters: Type.Object({\n      name: Type.String({ description: \"Name to greet\" }),\n    }),\n    async execute(toolCallId, params, signal, onUpdate, ctx) {\n      return {\n        content: [{ type: \"text\", text: `Hello, ${params.name}!` }],\n        details: {},\n      };\n    },\n  });\n\n  // Register a command\n  pi.registerCommand(\"hello\", {\n    description: \"Say hello\",\n    handler: async (args, ctx) => {\n      ctx.ui.notify(`Hello ${args || \"world\"}!`, \"info\");\n    },\n  });\n}\n...\nexport default function (pi: ExtensionAPI) {\n  // Subscribe to events\n  pi.on(\"event_name\", async (event, ctx) => {\n    // ctx.ui for user…[fixture 截断，原长 5121]"
+      ]
+    }
+  ],
+  "total": 3,
+  "elapsed_ms": 2360.33
+}
