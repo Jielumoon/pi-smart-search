@@ -42,13 +42,13 @@ smart-search doctor
 
 `doctor` 会发起实际连通性探测。服务商配置和凭证由 Smart Search 管理，本扩展不另建一套配置。
 
-在本仓库的本地目录中，将扩展注册到 pi：
+从 GitHub 安装扩展：
 
 ```bash
-pi install "$PWD"
+pi install git:github.com/Jielumoon/pi-smart-search
 ```
 
-本地目录会继续作为包来源，请保留该目录。
+如果已下载本仓库，也可以在仓库根目录运行 `pi install "$PWD"`，将本地目录注册为包来源。
 
 ## 快速开始
 
